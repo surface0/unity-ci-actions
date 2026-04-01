@@ -1,0 +1,82 @@
+name: Build on Push(Windows)
+
+on:
+  push:
+    branches:
+      - feature/build-ci-linux # TODO: メインブランチ以外を対象にする場合はここを変更してください
+
+env:
+  NX_ADDON_NAME: 'Unity6000.3.4_LTS-NXAddon20.5.14-Unity6.3'
+
+jobs:
+  build:
+    runs-on: [self-hosted, Windows, Unity, Switch]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true # Git LFSファイルをチェックアウトする
+    
+    - name: Git LFS Install
+      run: git lfs install
+      shell: bash
+
+    - name: Restore Git LFS Cache
+      uses: ./.github/ss-fleet-ci/actions/cache-lfs
+      with:
+        command: restore
+        cache-key: ${{ github.event.repository.name }}-lfs
+
+    - name: Get Unity Version
+      id: get_unity_version
+      uses: ./.github/ss-fleet-ci/actions/get-unity-version
+
+    - name: Restore NuGet Packages Cache
+      uses: ./.github/ss-fleet-ci/actions/cache-generic
+      with:
+        command: restore
+        target-dir: Packages/nuget-packages/InstalledPackages
+        cache-key: ${{ github.event.repository.name }}-nuget-${{ hashFiles('Packages/nuget-packages/packages.config') }}
+        restore-keys: ${{ github.event.repository.name }}-nuget-
+
+    - name: Restore Unity Library Cache
+      uses: ./.github/ss-fleet-ci/actions/cache-library
+      with:
+        command: restore
+        unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
+
+    - name: Activate Unity License
+      uses: ./.github/ss-fleet-ci/actions/activate-unity-license
+      with:
+        license-content: ${{ secrets.UNITY_LICENSE_WINDOWS }}
+
+    - name: Setup Nintendo SDK
+      uses: ./.github/ss-fleet-ci/actions/setup-nintendo-sdk
+
+    - name: Run Unity Build
+      # build.pyスクリプトを実行してビルドします
+      # C#スクリプト(BuildScript.cs)に記述されている `Build` メソッドを呼び出します
+      run: python .github/ss-fleet-ci/scripts/build.py --method BuildScript.Build --target Switch
+      shell: bash
+
+    - name: Save Unity Library Cache
+      uses: ./.github/ss-fleet-ci/actions/cache-library
+      with:
+        command: save
+        unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
+
+    - name: Save NuGet Packages Cache
+      uses: ./.github/ss-fleet-ci/actions/cache-generic
+      with:
+        command: save
+        target-dir: Packages/nuget-packages/InstalledPackages
+        cache-key: ${{ github.event.repository.name }}-nuget-${{ hashFiles('Packages/nuget-packages/packages.config') }}
+
+    - name: Move Build Artifacts
+      # ビルド成果物を指定のディレクトリに移動します
+      run: |
+        destination="D:/Lily2/Build"
+        mkdir -p "$destination"
+        mv ./Build/* "$destination/"
+      shell: bash

@@ -1,0 +1,30 @@
+name: Daily Git LFS Cache Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight UTC
+
+jobs:
+  cache:
+    runs-on: [self-hosted, ubuntu]
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Git LFS Install
+      run: git lfs install
+      shell: bash
+
+    - name: Save Git LFS Cache
+      uses: ./.github/ss-fleet-ci/actions/cache-lfs
+      with:
+        command: save
+        cache-key: ${{ github.event.repository.name }}-lfs-latest
+
+    - name: Output timestamp
+      run: |
+        date_str=$(date +"%Y-%m-%d %H:%M:%S")
+        echo "LFS cache saved at: $date_str"
+      shell: bash

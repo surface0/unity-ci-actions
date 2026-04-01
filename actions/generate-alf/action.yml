@@ -1,0 +1,33 @@
+name: 'Generate Unity ALF'
+description: 'Generate Unity activation license file (.alf) and upload as artifact'
+runs:
+  using: "composite"
+  steps:
+    - name: Generate ALF
+      run: python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/activate.py" generate-alf
+      shell: bash
+
+    - name: Upload ALF
+      uses: actions/upload-artifact@v4
+      with:
+        name: unity-activation-file
+        path: "*.alf"
+
+    - name: Print manual activation instructions
+      shell: bash
+      run: |
+        echo "=========================================="
+        echo "  Unity 手動アクティベーション手順"
+        echo "=========================================="
+        echo ""
+        echo "1. このワークフローの成果物 'unity-activation-file' をダウンロードします。"
+        echo "2. https://license.unity3d.com/manual にアクセスします。"
+        echo "3. Unity アカウントでサインインします。"
+        echo "4. ダウンロードした .alf ファイルをアップロードします。"
+        echo "5. シリアルキーを入力してアクティベーションを完了します。"
+        echo "6. 生成された .ulf ファイルをダウンロードします。"
+        echo "7. .ulf ファイルをランナー上の安全な場所に配置します。"
+        echo ""
+        echo "アクティベーションを実行するには:"
+        echo "  python .github/ss-fleet-ci/scripts/activate.py activate --license-file <ulfファイルのパス>"
+        echo "=========================================="

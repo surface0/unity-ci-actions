@@ -1,0 +1,29 @@
+name: 'Activate Unity License'
+description: 'Activate Unity license using ULF file content from a secret'
+inputs:
+  license-content:
+    description: 'Content of the Unity license file (.ulf)'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Write license file
+      env:
+        LICENSE_CONTENT: ${{ inputs.license-content }}
+      run: echo "$LICENSE_CONTENT" > /tmp/unity_license.ulf
+      shell: bash
+
+    - name: Activate Unity license
+      run: |
+        if command -v cygpath > /dev/null 2>&1; then
+          action_path=$(cygpath -u "${{ github.action_path }}")
+        else
+          action_path="${{ github.action_path }}"
+        fi
+        python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/activate.py" activate --license-file /tmp/unity_license.ulf
+      shell: bash
+
+    - name: Remove license file
+      if: always()
+      run: rm -f /tmp/unity_license.ulf
+      shell: bash

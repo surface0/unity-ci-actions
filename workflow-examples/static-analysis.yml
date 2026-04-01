@@ -1,0 +1,86 @@
+name: Static Analysis
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  checks: write
+  contents: read
+
+jobs:
+  inspect:
+    name: C# Static Analysis (ReSharper)
+    runs-on: [self-hosted, ubuntu]
+    container:
+      image: registry.internal.syn-sophia.net/switch-gyro-camera-demo/unityci/editor:ubuntu-6000.3.4f1-linux-il2cpp-3.2.2-v1
+      volumes:
+        - "/var/actions-runner-persistent-caches:/var/actions-runner-persistent-caches"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Restore NuGet Packages Cache
+        uses: ./.github/ss-fleet-ci/actions/cache-generic
+        with:
+          command: restore
+          target-dir: Packages/nuget-packages/InstalledPackages
+          cache-key: ${{ github.event.repository.name }}-nuget-${{ hashFiles('Packages/nuget-packages/packages.config') }}
+          restore-keys: ${{ github.event.repository.name }}-nuget-
+
+      - name: Get Unity Version
+        id: get_unity_version
+        uses: ./.github/ss-fleet-ci/actions/get-unity-version
+
+      - name: Restore Unity Library Cache
+        uses: ./.github/ss-fleet-ci/actions/cache-library
+        with:
+          command: restore
+          unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
+
+      - name: Activate Unity License
+        uses: ./.github/ss-fleet-ci/actions/activate-unity-license
+        with:
+          license-content: ${{ secrets.UNITY_LICENSE_LINUX }}
+
+      - name: Generate Solution File
+        run: python .github/ss-fleet-ci/scripts/build.py --method Packages.Rider.Editor.RiderScriptEditor.SyncSolution --target StandaloneLinux64
+        shell: bash
+
+      - name: Install ReSharper CLI
+        run: |
+          # ワークスペースに複数 .csproj があると dotnet が誤検出するため /tmp で実行
+          cd /tmp && dotnet tool install --tool-path /tmp/jetbrains-tools JetBrains.ReSharper.GlobalTools
+          echo "/tmp/jetbrains-tools" >> $GITHUB_PATH
+        shell: bash
+
+      - name: Run inspectcode
+        run: |
+          jb inspectcode SwitchGyroCameraDemo.sln \
+            --include="Assets/Scripts/**/*" \
+            --output=inspectcode-report.sarif \
+            --format=Sarif
+        shell: bash
+
+      - name: Setup reviewdog
+        if: always()
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
+      - name: Report with reviewdog
+        if: always()
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat inspectcode-report.sarif | reviewdog \
+            -f=sarif \
+            -name="ReSharper Inspections" \
+            -reporter=github-check \
+            -fail-on-error=true
+        shell: bash

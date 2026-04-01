@@ -1,0 +1,15 @@
+name: 'Setup Nintendo SDK Environment'
+description: 'Sets up the NINTENDO_SDK_ROOT environment variable for Switch builds.'
+runs:
+  using: "composite"
+  steps:
+    - name: Set NINTENDO_SDK_ROOT
+      shell: bash
+      run: |
+        if [[ -n "${NINTENDO_ROOT}" && -n "${NX_ADDON_NAME}" ]]; then
+          sdk_root="${NINTENDO_ROOT}/${NX_ADDON_NAME}/NintendoSDK"
+          echo "NINTENDO_SDK_ROOT=${sdk_root}" >> $GITHUB_ENV
+          echo "Set NINTENDO_SDK_ROOT to ${sdk_root}"
+        else
+          echo "NINTENDO_ROOT or NX_ADDON_NAME environment variables not set. Skipping."
+        fi

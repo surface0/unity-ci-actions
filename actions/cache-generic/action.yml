@@ -1,0 +1,46 @@
+name: 'Generic Cache'
+description: 'Generic cache action using cache.py'
+inputs:
+  command:
+    description: '"save" or "restore"'
+    required: true
+  target-dir:
+    description: 'Target directory to cache'
+    required: true
+  cache-key:
+    description: 'Cache key'
+    required: true
+  restore-keys:
+    description: 'Restore keys (used for restore)'
+    required: false
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Run cache.py
+      run: |
+        if command -v cygpath > /dev/null 2>&1; then
+          action_path=$(cygpath -u "${{ github.action_path }}")
+        else
+          action_path="${{ github.action_path }}"
+        fi
+
+        if [ "${{ inputs.command }}" = "restore" ]; then
+          RESTORE_ARGS=""
+          if [ -n "${{ inputs.restore-keys }}" ]; then
+            RESTORE_ARGS="--restore-keys ${{ inputs.restore-keys }}"
+          fi
+          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
+            --cache-dir "$PERSISTENT_CACHE_DIR" \
+            restore \
+            --target-dir "${{ inputs.target-dir }}" \
+            --cache-key "${{ inputs.cache-key }}" \
+            $RESTORE_ARGS
+        else
+          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
+            --cache-dir "$PERSISTENT_CACHE_DIR" \
+            save \
+            --target-dir "${{ inputs.target-dir }}" \
+            --cache-key "${{ inputs.cache-key }}"
+        fi
+      shell: bash

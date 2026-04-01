@@ -1,0 +1,35 @@
+name: 'Cache Unity Library'
+description: 'Cache Unity Library directory'
+inputs:
+  command:
+    description: '"save" or "restore"'
+    required: true
+  unity-version:
+    description: 'Unity version'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Run cache.py for Library
+      run: |
+        if command -v cygpath > /dev/null 2>&1; then
+          action_path=$(cygpath -u "${{ github.action_path }}")
+        else
+          action_path="${{ github.action_path }}"
+        fi
+
+        if [ "${{ inputs.command }}" = "restore" ]; then
+          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
+            --cache-dir "$PERSISTENT_CACHE_DIR" \
+            restore \
+            --target-dir Library \
+            --cache-key ${{ github.event.repository.name }}-Library-${{ inputs.unity-version }}-${{ github.ref_name }} \
+            --restore-keys ${{ github.event.repository.name }}-Library-${{ inputs.unity-version }}-
+        else
+          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
+            --cache-dir "$PERSISTENT_CACHE_DIR" \
+            save \
+            --target-dir Library \
+            --cache-key ${{ github.event.repository.name }}-Library-${{ inputs.unity-version }}-${{ github.ref_name }}
+        fi
+      shell: bash
