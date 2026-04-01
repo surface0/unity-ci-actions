@@ -13,13 +13,12 @@ jobs:
       # ジョブコンテナで実行する場合は持続的キャッシュの保存先は明示的にマウントする必要がある
       volumes:
         - "/var/actions-runner-persistent-caches:/var/actions-runner-persistent-caches"
-        
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
-      with:
-        lfs: true # Git LFSファイルをチェックアウトする
-    
+      # lfs: true は指定しない。LFS オブジェクトはキャッシュ復元後に差分取得する
+
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -29,48 +28,41 @@ jobs:
       run: git lfs install
       shell: bash
 
-    - name: Restore Git LFS Cache
+    # LFS キャッシュのセーブは lfs-cache-daily.yml のみで行う
+    - name: Git LFS キャッシュを復元する
       uses: ./.github/ss-fleet-ci/actions/cache-lfs
       with:
-        command: restore
         cache-key: ${{ github.event.repository.name }}-lfs
+        skip-save: 'true'
 
-    - name: Get Unity Version
+    # キャッシュ復元後に差分だけ取得することで全件ダウンロードを回避する
+    - name: Git LFS オブジェクトを差分取得する
+      run: git lfs pull
+      shell: bash
+
+    - name: Unity バージョンを取得する
       id: get_unity_version
       uses: ./.github/ss-fleet-ci/actions/get-unity-version
 
-    - name: Restore NuGet Packages Cache
+    # job 成功時にポストステップで自動セーブされる
+    - name: NuGet パッケージキャッシュを復元する
       uses: ./.github/ss-fleet-ci/actions/cache-generic
       with:
-        command: restore
         target-dir: Packages/nuget-packages/InstalledPackages
         cache-key: ${{ github.event.repository.name }}-nuget-${{ hashFiles('Packages/nuget-packages/packages.config') }}
         restore-keys: ${{ github.event.repository.name }}-nuget-
 
-    - name: Restore Unity Library Cache
+    # job 成功時にポストステップで自動セーブされる
+    - name: Unity Library キャッシュを復元する
       uses: ./.github/ss-fleet-ci/actions/cache-library
       with:
-        command: restore
         unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
 
-    - name: Activate Unity License
+    - name: Unity ライセンスを認証する
       uses: ./.github/ss-fleet-ci/actions/activate-unity-license
       with:
         license-content: ${{ secrets.UNITY_LICENSE_LINUX }}
 
-    - name: Run Unity Build
+    - name: Unity ビルドを実行する
       run: python .github/ss-fleet-ci/scripts/build.py --method BuildScript.BuildLinux --target StandaloneLinux64
       shell: bash
-
-    - name: Save Unity Library Cache
-      uses: ./.github/ss-fleet-ci/actions/cache-library
-      with:
-        command: save
-        unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
-
-    - name: Save NuGet Packages Cache
-      uses: ./.github/ss-fleet-ci/actions/cache-generic
-      with:
-        command: save
-        target-dir: Packages/nuget-packages/InstalledPackages
-        cache-key: ${{ github.event.repository.name }}-nuget-${{ hashFiles('Packages/nuget-packages/packages.config') }}

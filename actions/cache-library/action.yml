@@ -1,38 +1,16 @@
 name: 'Unity Library キャッシュ'
-description: 'Unity Library ディレクトリを Unity バージョン・ブランチごとにキャッシュする'
+description: 'Unity Library ディレクトリを Unity バージョン・ブランチごとに restore し、job 成功時にポストステップで自動 save する'
 inputs:
-  command:
-    description: '"save" または "restore"'
-    required: true
   unity-version:
     description: 'Unity バージョン文字列（get-unity-version action の出力を渡す）'
     required: true
+  skip-save:
+    description: 'true にするとポストステップでの自動 save をスキップする'
+    required: false
+    default: 'false'
 runs:
-  using: "composite"
-  steps:
-    - name: cache.py を実行する（Unity Library）
-      run: |
-        # cygpath は Windows (Git Bash) 環境でのみ存在する。パス変換が必要なときに使用
-        if command -v cygpath > /dev/null 2>&1; then
-          action_path=$(cygpath -u "${{ github.action_path }}")
-        else
-          action_path="${{ github.action_path }}"
-        fi
-
-        # キャッシュキー形式: {repo}-Library-{unity-version}-{branch}
-        # restore-keys:     {repo}-Library-{unity-version}-   ← バージョンが同じ別ブランチにフォールバック
-        if [ "${{ inputs.command }}" = "restore" ]; then
-          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
-            --cache-dir "$PERSISTENT_CACHE_DIR" \
-            restore \
-            --target-dir Library \
-            --cache-key ${{ github.event.repository.name }}-Library-${{ inputs.unity-version }}-${{ github.ref_name }} \
-            --restore-keys ${{ github.event.repository.name }}-Library-${{ inputs.unity-version }}-
-        else
-          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
-            --cache-dir "$PERSISTENT_CACHE_DIR" \
-            save \
-            --target-dir Library \
-            --cache-key ${{ github.event.repository.name }}-Library-${{ inputs.unity-version }}-${{ github.ref_name }}
-        fi
-      shell: bash
+  using: 'node20'
+  main: 'dist/main.js'
+  post: 'dist/post.js'
+  # job が成功したときだけ自動 save を実行する
+  post-if: success()

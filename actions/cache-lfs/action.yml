@@ -1,48 +1,16 @@
 name: 'Git LFS キャッシュ'
-description: 'Git LFS オブジェクト (.git/lfs) を save/restore する'
+description: 'Git LFS オブジェクト (.git/lfs) を restore し、job 成功時にポストステップで自動 save する'
 inputs:
-  command:
-    description: '"save" または "restore"'
-    required: true
   cache-key:
     description: 'キャッシュキー'
     required: true
+  skip-save:
+    description: 'true にするとポストステップでの自動 save をスキップする'
+    required: false
+    default: 'false'
 runs:
-  using: "composite"
-  steps:
-    - name: cache.py を実行する（Git LFS）
-      run: |
-        # cygpath は Windows (Git Bash) 環境でのみ存在する。パス変換が必要なときに使用
-        if command -v cygpath > /dev/null 2>&1; then
-          action_path=$(cygpath -u "${{ github.action_path }}")
-        else
-          action_path="${{ github.action_path }}"
-        fi
-
-        # LFS_CACHE_DIR が未設定の場合は PERSISTENT_CACHE_DIR にフォールバックする
-        CACHE_DIR="$LFS_CACHE_DIR"
-        if [ -z "$CACHE_DIR" ]; then
-          CACHE_DIR="$PERSISTENT_CACHE_DIR"
-        fi
-
-        if [ -z "$CACHE_DIR" ]; then
-          echo "::error::LFS_CACHE_DIR and PERSISTENT_CACHE_DIR are not set."
-          exit 1
-        fi
-
-        if [ "${{ inputs.command }}" = "restore" ]; then
-          # restore-keys に cache-key と同じ値を渡してプレフィックス一致フォールバックを有効にする
-          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
-            --cache-dir "$CACHE_DIR" \
-            restore \
-            --target-dir .git/lfs \
-            --cache-key "${{ inputs.cache-key }}" \
-            --restore-keys "${{ inputs.cache-key }}"
-        else
-          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
-            --cache-dir "$CACHE_DIR" \
-            save \
-            --target-dir .git/lfs \
-            --cache-key "${{ inputs.cache-key }}"
-        fi
-      shell: bash
+  using: 'node20'
+  main: 'dist/main.js'
+  post: 'dist/post.js'
+  # job が成功したときだけ自動 save を実行する
+  post-if: success()

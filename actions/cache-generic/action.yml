@@ -1,9 +1,6 @@
 name: '汎用キャッシュ'
-description: '任意のディレクトリを cache.py を使って save/restore する'
+description: '任意のディレクトリを cache.py を使って restore し、job 成功時にポストステップで自動 save する'
 inputs:
-  command:
-    description: '"save" または "restore"'
-    required: true
   target-dir:
     description: 'キャッシュ対象のディレクトリ（プロジェクトルートからの相対パス）'
     required: true
@@ -11,38 +8,16 @@ inputs:
     description: 'キャッシュキー'
     required: true
   restore-keys:
-    description: 'フォールバック用のキープレフィックス（restore 時のみ使用、カンマ区切り）'
+    description: 'フォールバック用のキープレフィックス（カンマ区切り）'
     required: false
     default: ''
+  skip-save:
+    description: 'true にするとポストステップでの自動 save をスキップする'
+    required: false
+    default: 'false'
 runs:
-  using: "composite"
-  steps:
-    - name: cache.py を実行する
-      run: |
-        # cygpath は Windows (Git Bash) 環境でのみ存在する。パス変換が必要なときに使用
-        if command -v cygpath > /dev/null 2>&1; then
-          action_path=$(cygpath -u "${{ github.action_path }}")
-        else
-          action_path="${{ github.action_path }}"
-        fi
-
-        # $PERSISTENT_CACHE_DIR はランナー側の環境変数として設定が必要
-        if [ "${{ inputs.command }}" = "restore" ]; then
-          RESTORE_ARGS=""
-          if [ -n "${{ inputs.restore-keys }}" ]; then
-            RESTORE_ARGS="--restore-keys ${{ inputs.restore-keys }}"
-          fi
-          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
-            --cache-dir "$PERSISTENT_CACHE_DIR" \
-            restore \
-            --target-dir "${{ inputs.target-dir }}" \
-            --cache-key "${{ inputs.cache-key }}" \
-            $RESTORE_ARGS
-        else
-          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
-            --cache-dir "$PERSISTENT_CACHE_DIR" \
-            save \
-            --target-dir "${{ inputs.target-dir }}" \
-            --cache-key "${{ inputs.cache-key }}"
-        fi
-      shell: bash
+  using: 'node20'
+  main: 'dist/main.js'
+  post: 'dist/post.js'
+  # job が成功したときだけ自動 save を実行する
+  post-if: success()
