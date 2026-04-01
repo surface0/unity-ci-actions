@@ -1,20 +1,22 @@
-name: 'Activate Unity License'
-description: 'Activate Unity license using ULF file content from a secret'
+name: 'Unity ライセンス認証'
+description: 'Secret に格納した ULF ファイルの内容を使って Unity ライセンスを認証する'
 inputs:
   license-content:
-    description: 'Content of the Unity license file (.ulf)'
+    description: 'Unity ライセンスファイル (.ulf) の内容'
     required: true
 runs:
   using: "composite"
   steps:
-    - name: Write license file
+    - name: ライセンスファイルを書き出す
       env:
         LICENSE_CONTENT: ${{ inputs.license-content }}
+      # Secret の内容を一時ファイルに書き出す。後続ステップで必ず削除する
       run: echo "$LICENSE_CONTENT" > /tmp/unity_license.ulf
       shell: bash
 
-    - name: Activate Unity license
+    - name: Unity ライセンスを認証する
       run: |
+        # cygpath は Windows (Git Bash) 環境でのみ存在する。パス変換が必要なときに使用
         if command -v cygpath > /dev/null 2>&1; then
           action_path=$(cygpath -u "${{ github.action_path }}")
         else
@@ -23,7 +25,8 @@ runs:
         python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/activate.py" activate --license-file /tmp/unity_license.ulf
       shell: bash
 
-    - name: Remove license file
+    - name: ライセンスファイルを削除する
+      # 認証の成否にかかわらず必ず削除する
       if: always()
       run: rm -f /tmp/unity_license.ulf
       shell: bash

@@ -1,30 +1,32 @@
-name: 'Generic Cache'
-description: 'Generic cache action using cache.py'
+name: '汎用キャッシュ'
+description: '任意のディレクトリを cache.py を使って save/restore する'
 inputs:
   command:
-    description: '"save" or "restore"'
+    description: '"save" または "restore"'
     required: true
   target-dir:
-    description: 'Target directory to cache'
+    description: 'キャッシュ対象のディレクトリ（プロジェクトルートからの相対パス）'
     required: true
   cache-key:
-    description: 'Cache key'
+    description: 'キャッシュキー'
     required: true
   restore-keys:
-    description: 'Restore keys (used for restore)'
+    description: 'フォールバック用のキープレフィックス（restore 時のみ使用、カンマ区切り）'
     required: false
     default: ''
 runs:
   using: "composite"
   steps:
-    - name: Run cache.py
+    - name: cache.py を実行する
       run: |
+        # cygpath は Windows (Git Bash) 環境でのみ存在する。パス変換が必要なときに使用
         if command -v cygpath > /dev/null 2>&1; then
           action_path=$(cygpath -u "${{ github.action_path }}")
         else
           action_path="${{ github.action_path }}"
         fi
 
+        # $PERSISTENT_CACHE_DIR はランナー側の環境変数として設定が必要
         if [ "${{ inputs.command }}" = "restore" ]; then
           RESTORE_ARGS=""
           if [ -n "${{ inputs.restore-keys }}" ]; then

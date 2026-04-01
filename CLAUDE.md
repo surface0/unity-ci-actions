@@ -120,3 +120,30 @@ python get_unity_version.py [--project <path>]
 1. `generate-alf` action または `activate.py generate-alf` で ALF ファイルを生成
 2. [https://license.unity3d.com/manual](https://license.unity3d.com/manual) でシリアルキーを入力して ULF を取得
 3. ULF ファイルを GitHub Secret（`UNITY_LICENSE_LINUX` / `UNITY_LICENSE_WINDOWS`）に格納する
+
+## action 作成・改修の規約
+
+### 名前とコメントの方針
+
+- `name` および `description` は日本語で記述する
+- ステップ名（`- name:`）も日本語で記述する
+- 以下に該当する箇所にはインラインコメントを付ける:
+  - ランナー側の設定（環境変数など）に依存している箇所
+  - フォールバック・条件分岐の意図が自明でない箇所
+  - プラットフォーム固有の処理（`cygpath` など Windows 対応）
+  - `if: always()` など、エラー時の挙動に影響するフラグ
+
+### cygpath について
+
+Windows の Git Bash 環境では POSIX パスと Windows パスの変換に `cygpath` を使用する。
+Linux ランナーには存在しないため、`command -v cygpath` で存在チェックを行うパターンを統一して使用する。
+
+```bash
+if command -v cygpath > /dev/null 2>&1; then
+  action_path=$(cygpath -u "${{ github.action_path }}")
+else
+  action_path="${{ github.action_path }}"
+fi
+```
+
+現状このブロックで取得した `action_path` 変数は未使用だが、スクリプト参照を `github.action_path` 相対に切り替える際の足がかりとして残している。

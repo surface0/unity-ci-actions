@@ -1,23 +1,25 @@
-name: 'Cache Git LFS'
-description: 'Cache Git LFS objects'
+name: 'Git LFS キャッシュ'
+description: 'Git LFS オブジェクト (.git/lfs) を save/restore する'
 inputs:
   command:
-    description: '"save" or "restore"'
+    description: '"save" または "restore"'
     required: true
   cache-key:
-    description: 'Cache key'
+    description: 'キャッシュキー'
     required: true
 runs:
   using: "composite"
   steps:
-    - name: Run cache.py for Git LFS
+    - name: cache.py を実行する（Git LFS）
       run: |
+        # cygpath は Windows (Git Bash) 環境でのみ存在する。パス変換が必要なときに使用
         if command -v cygpath > /dev/null 2>&1; then
           action_path=$(cygpath -u "${{ github.action_path }}")
         else
           action_path="${{ github.action_path }}"
         fi
 
+        # LFS_CACHE_DIR が未設定の場合は PERSISTENT_CACHE_DIR にフォールバックする
         CACHE_DIR="$LFS_CACHE_DIR"
         if [ -z "$CACHE_DIR" ]; then
           CACHE_DIR="$PERSISTENT_CACHE_DIR"
@@ -29,6 +31,7 @@ runs:
         fi
 
         if [ "${{ inputs.command }}" = "restore" ]; then
+          # restore-keys に cache-key と同じ値を渡してプレフィックス一致フォールバックを有効にする
           python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
             --cache-dir "$CACHE_DIR" \
             restore \

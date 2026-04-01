@@ -1,19 +1,20 @@
-name: 'Generate Unity ALF'
-description: 'Generate Unity activation license file (.alf) and upload as artifact'
+name: 'Unity ALF ファイル生成'
+description: '手動アクティベーション用の ALF ファイルを生成して artifact にアップロードする'
 runs:
   using: "composite"
   steps:
-    - name: Generate ALF
+    - name: ALF ファイルを生成する
+      # ALF はワークスペースルート（Unity 実行ディレクトリ）に生成される
       run: python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/activate.py" generate-alf
       shell: bash
 
-    - name: Upload ALF
+    - name: ALF ファイルを artifact にアップロードする
       uses: actions/upload-artifact@v4
       with:
         name: unity-activation-file
         path: "*.alf"
 
-    - name: Print manual activation instructions
+    - name: 手動アクティベーション手順を表示する
       shell: bash
       run: |
         echo "=========================================="
