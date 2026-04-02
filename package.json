@@ -1,8 +1,7 @@
 {
   "name": "ss-fleet-ci",
   "version": "1.0.0",
-  "type": "module",
-  "scripts": {
+"scripts": {
     "build": "rollup -c"
   },
   "dependencies": {
