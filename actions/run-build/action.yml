@@ -1,0 +1,14 @@
+name: 'Unity ビルド実行'
+description: 'build.py を使って Unity をバッチモードで実行する'
+inputs:
+  method:
+    description: '呼び出す C# 静的メソッド（例: BuildScript.Build）'
+    required: true
+  target:
+    description: 'ビルドターゲット（例: Switch, StandaloneLinux64）'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: python "${{ github.action_path }}/../../scripts/build.py" --method ${{ inputs.method }} --target ${{ inputs.target }}
+      shell: bash
