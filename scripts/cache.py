@@ -9,6 +9,7 @@ cache.py
 import os
 import shutil
 import sys
+import tempfile
 from pathlib import Path
 import argparse
 import stat
@@ -64,21 +65,27 @@ def save_cache(project_path: Path, cache_dir: str, target_dir: str, cache_key: s
         print(f"Target directory {target_dir_path} does not exist. Skipping cache save.", file=sys.stderr)
         return 0
 
+    tmp_path = None
     try:
-        if cache_file.exists():
-            # 既存のキャッシュファイルがあれば上書きのために削除
-            cache_file.unlink()
-            print(f"Removed existing cache file: {cache_file}")
+        # 一時ファイルに書き込んでからアトミックにリネームする（同時アクセス対策）
+        with tempfile.NamedTemporaryFile(
+            dir=cache_root_dir, suffix='.tar.zst.tmp', delete=False
+        ) as tmp:
+            tmp_path = Path(tmp.name)
 
         print(f"Creating and compressing tar archive to {cache_file} using Python tarfile's native zstd support...")
-        with tarfile.open(name=cache_file, mode="w:zst") as tar:
+        with tarfile.open(name=tmp_path, mode="w:zst") as tar:
             # arcnameを相対パスで指定することで、解凍時にプロジェクトルートに展開されるようにする
             tar.add(str(target_dir_path), arcname=target_dir_path.relative_to(project_path))
 
+        os.replace(tmp_path, cache_file)  # POSIX では原子的なリネーム
+        tmp_path = None
         print("Cache saved successfully.")
         return 0
     except Exception as e:
         print(f"Failed to save cache: {e}", file=sys.stderr)
+        if tmp_path and tmp_path.exists():
+            tmp_path.unlink(missing_ok=True)
         return 1
 
 def restore_cache(project_path: Path, cache_dir: str, target_dir: str, cache_key: str, restore_keys: list[str] | None = None):
