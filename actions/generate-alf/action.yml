@@ -5,7 +5,7 @@ runs:
   steps:
     - name: ALF ファイルを生成する
       # ALF はワークスペースルート（Unity 実行ディレクトリ）に生成される
-      run: python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/activate.py" generate-alf
+      run: python "$GITHUB_ACTION_PATH/../../scripts/activate.py" generate-alf
       shell: bash
 
     - name: ALF ファイルを artifact にアップロードする
@@ -30,5 +30,5 @@ runs:
         echo "7. .ulf ファイルをランナー上の安全な場所に配置します。"
         echo ""
         echo "アクティベーションを実行するには:"
-        echo "  python .github/ss-fleet-ci/scripts/activate.py activate --license-file <ulfファイルのパス>"
+        echo "  python <ss-fleet-ciのパス>/scripts/activate.py activate --license-file <ulfファイルのパス>"
         echo "=========================================="

@@ -11,10 +11,10 @@ runs:
       run: |
         # cygpath は Windows (Git Bash) 環境でのみ存在する。パス変換が必要なときに使用
         if command -v cygpath > /dev/null 2>&1; then
-          action_path=$(cygpath -u "${{ github.action_path }}")
+          script_path=$(cygpath -u "$GITHUB_ACTION_PATH/../../scripts/get_unity_version.py")
         else
-          action_path="${{ github.action_path }}"
+          script_path="$GITHUB_ACTION_PATH/../../scripts/get_unity_version.py"
         fi
-        version=$(python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/get_unity_version.py")
+        version=$(python "$script_path")
         echo "version=$version" >> $GITHUB_OUTPUT
       shell: bash

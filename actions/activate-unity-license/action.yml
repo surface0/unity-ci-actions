@@ -18,11 +18,11 @@ runs:
       run: |
         # cygpath は Windows (Git Bash) 環境でのみ存在する。パス変換が必要なときに使用
         if command -v cygpath > /dev/null 2>&1; then
-          action_path=$(cygpath -u "${{ github.action_path }}")
+          script_path=$(cygpath -u "$GITHUB_ACTION_PATH/../../scripts/activate.py")
         else
-          action_path="${{ github.action_path }}"
+          script_path="$GITHUB_ACTION_PATH/../../scripts/activate.py"
         fi
-        python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/activate.py" activate --license-file /tmp/unity_license.ulf
+        python "$script_path" activate --license-file /tmp/unity_license.ulf
       shell: bash
 
     - name: ライセンスファイルを削除する
