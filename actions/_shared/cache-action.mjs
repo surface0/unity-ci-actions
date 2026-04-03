@@ -2,7 +2,7 @@ import * as exec from '@actions/exec'
 import { join } from 'path'
 
 export function getScriptPath() {
-  return join(process.env.GITHUB_WORKSPACE, '.github', 'ss-fleet-ci', 'scripts', 'cache.py')
+  return join(process.env.GITHUB_ACTION_PATH, '..', '..', 'scripts', 'cache.py')
 }
 
 export function getCacheDir({ useLfs = false } = {}) {
