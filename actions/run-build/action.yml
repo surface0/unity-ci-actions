@@ -10,5 +10,5 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: python "${{ github.action_path }}/../../scripts/build.py" --method ${{ inputs.method }} --target ${{ inputs.target }}
+    - run: python "$GITHUB_ACTION_PATH/../../scripts/build.py" --method ${{ inputs.method }} --target ${{ inputs.target }}
       shell: bash
