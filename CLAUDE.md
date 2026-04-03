@@ -1,7 +1,7 @@
 # ss-fleet-ci
 
 社内のセルフホストランナーで Unity CI を実行するための、共有 composite action とスクリプトのリポジトリ。
-別プロジェクトから `.github/ss-fleet-ci` としてサブモジュールで組み込んで使用する。
+`synSophia` Org 内のプロジェクトから GitHub Actions のリポジトリ参照で使用する（サブモジュールではない）。
 
 ## ディレクトリ構造
 
@@ -11,10 +11,12 @@ actions/                  # GitHub Actions の composite action
   cache-generic/          # 任意ディレクトリのキャッシュ save/restore
   cache-lfs/              # Git LFS オブジェクトのキャッシュ save/restore
   cache-library/          # Unity Library のキャッシュ save/restore
+  cache-purge/            # 古いキャッシュファイルの削除
   generate-alf/           # ALF ファイル生成と artifact アップロード
   get-unity-version/      # ProjectVersion.txt からバージョン取得
+  run-build/              # Unity バッチモードビルド実行
   setup-nintendo-sdk/     # NINTENDO_SDK_ROOT 環境変数のセット
-scripts/                  # CI から直接呼び出す Python スクリプト
+scripts/                  # action 内から呼び出す Python スクリプト
   build.py                # Unity バッチモードビルド実行
   activate.py             # ライセンス管理（ALF 生成 / ULF 認証）
   cache.py                # キャッシュの save / restore / purge
@@ -23,25 +25,30 @@ scripts/                  # CI から直接呼び出す Python スクリプト
 workflow-examples/        # 各 action の使用例となるサンプルワークフロー
 ```
 
-## サブモジュールとして組み込む
+## Org リポジトリとして参照する
 
-```bash
-git submodule add git@github.com:synSophia/ss-fleet-ci.git .github/ss-fleet-ci
-```
-
-checkout 時にサブモジュールを含めて取得するには:
-
-```bash
-git clone --recurse-submodules <repo-url>
-# または既存クローン後
-git submodule update --init
-```
-
-ワークフローからのパス参照は以下のプレフィックスで統一する:
+ワークフローから action を参照する形式:
 
 ```yaml
-uses: ./.github/ss-fleet-ci/actions/<action-name>  # composite action
-run: python .github/ss-fleet-ci/scripts/<script>.py # スクリプト直接呼び出し
+uses: synSophia/ss-fleet-ci/actions/<action-name>@main
+```
+
+### 利用側リポジトリの設定
+
+- `ss-fleet-ci` の Settings → Actions → Access →
+  **「Accessible from repositories in the 'synSophia' organization」** を有効にすること
+
+### スクリプトのパス参照
+
+composite action 内から Python スクリプトを参照する場合は `$GITHUB_ACTION_PATH` を使用する。
+node action（`dist/main.js`）内からは `__dirname` を使用する。
+
+```bash
+# composite action 内（action.yml の run ステップ）
+python "$GITHUB_ACTION_PATH/../../scripts/build.py"
+
+# node action 内（cache-action.mjs）
+join(__dirname, '..', '..', '..', 'scripts', 'cache.py')
 ```
 
 ## スクリプト仕様
@@ -77,6 +84,7 @@ python cache.py --cache-dir <dir> restore --target-dir <dir> --cache-key <key> [
 python cache.py --cache-dir <dir> purge   [--days <n>]
 ```
 
+- `save` は一時ファイルに書き込んでから `os.replace` でアトミックにリネームする（同時アクセス対策）
 - `restore` はプライマリキーが見つからない場合、`--restore-keys` のプレフィックス一致で最新ファイルにフォールバックする
 - `purge` は指定日数より古いキャッシュファイルを削除する（デフォルト 14 日）
 
@@ -87,6 +95,15 @@ python get_unity_version.py [--project <path>]
 ```
 
 `ProjectSettings/ProjectVersion.txt` からバージョン文字列を読み取り stdout に出力する。ワークフローの `steps output` へ渡す用途を想定。
+
+## node action のビルド
+
+`cache-generic` / `cache-lfs` / `cache-library` は rollup でバンドルしている。ソース変更後は必ずリビルドしてコミットすること。
+
+```bash
+npm install
+npm run build
+```
 
 ## セルフホストランナーの要件
 
@@ -140,10 +157,9 @@ Linux ランナーには存在しないため、`command -v cygpath` で存在�
 
 ```bash
 if command -v cygpath > /dev/null 2>&1; then
-  action_path=$(cygpath -u "${{ github.action_path }}")
+  script_path=$(cygpath -u "$GITHUB_ACTION_PATH/../../scripts/script.py")
 else
-  action_path="${{ github.action_path }}"
+  script_path="$GITHUB_ACTION_PATH/../../scripts/script.py"
 fi
+python "$script_path"
 ```
-
-現状このブロックで取得した `action_path` 変数は未使用だが、スクリプト参照を `github.action_path` 相対に切り替える際の足がかりとして残している。
