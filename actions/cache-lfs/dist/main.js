@@ -27259,7 +27259,7 @@ var coreExports = requireCore();
 var execExports = requireExec();
 
 function getScriptPath() {
-  return require$$1$4.join(process.env.GITHUB_ACTION_PATH, '..', '..', 'scripts', 'cache.py')
+  return require$$1$4.join(__dirname, '..', '..', '..', 'scripts', 'cache.py')
 }
 
 function getCacheDir({ useLfs = false } = {}) {
