@@ -6,6 +6,17 @@
 ## ディレクトリ構造
 
 ```
+.github/
+  workflows/              # reusable workflow（他リポジトリから uses: で呼び出す）
+    build-linux.yml       # Linux ビルド
+    build-windows.yml     # Windows/Switch ビルド
+    test-linux.yml        # Linux テスト（EditMode / PlayMode）
+    test-windows.yml      # Windows テスト（EditMode / PlayMode）
+    code-quality.yml      # フォーマットチェック + 静的解析（ReSharper）
+    cspell.yml            # スペルチェック
+    lfs-cache-daily.yml   # Git LFS キャッシュ日次更新
+    cache-cleanup.yml     # 古いキャッシュの削除
+    generate-alf.yml      # Unity ALF 生成
 actions/                  # GitHub Actions の composite action
   activate-unity-license/ # ULF を使ったライセンス認証
   cache-generic/          # 任意ディレクトリのキャッシュ save/restore
@@ -15,22 +26,36 @@ actions/                  # GitHub Actions の composite action
   generate-alf/           # ALF ファイル生成と artifact アップロード
   get-unity-version/      # ProjectVersion.txt からバージョン取得
   run-build/              # Unity バッチモードビルド実行
+  run-tests/              # Unity バッチモードテスト実行
   setup-nintendo-sdk/     # NINTENDO_SDK_ROOT 環境変数のセット
 scripts/                  # action 内から呼び出す Python スクリプト
   build.py                # Unity バッチモードビルド実行
+  test.py                 # Unity バッチモードテスト実行（JUnit XML 出力）
   activate.py             # ライセンス管理（ALF 生成 / ULF 認証）
   cache.py                # キャッシュの save / restore / purge
   get_unity_version.py    # ProjectVersion.txt からバージョンを stdout に出力
   unity_utils.py          # Unity 実行ファイル検索・起動のユーティリティ
-workflow-examples/        # 各 action の使用例となるサンプルワークフロー
+workflow-examples/        # 利用側リポジトリ向けのワークフロー記述例
 ```
 
 ## Org リポジトリとして参照する
 
-ワークフローから action を参照する形式:
+ワークフローから composite action を参照する形式:
 
 ```yaml
 uses: synSophia/ss-fleet-ci/actions/<action-name>@main
+```
+
+reusable workflow を参照する形式:
+
+```yaml
+jobs:
+  my-job:
+    uses: synSophia/ss-fleet-ci/.github/workflows/<workflow-name>.yml@main
+    with:
+      some-input: value
+    secrets:
+      some-secret: ${{ secrets.SOME_SECRET }}
 ```
 
 ### 利用側リポジトリの設定
@@ -64,6 +89,22 @@ python build.py --method <ClassName.Method> --target <BuildTarget> [--project <p
 - `--method`: 呼び出す C# 静的メソッド（必須）
 - `--target`: ビルドターゲット（省略時: `Switch`）
 - `--project`: プロジェクトパス（省略時: カレントディレクトリ）
+
+### test.py
+
+Unity プロジェクトの EditMode / PlayMode テストをバッチモードで実行する。
+テスト結果は `com.nowsprinting.test-helper` の `-testHelperJUnitResults` オプションで JUnit XML 形式に出力される。
+
+```
+python test.py --platform <EditMode|PlayMode> --results <path> [--project <path>] [--dry-run]
+```
+
+- `--platform`: テストプラットフォーム（省略時: `EditMode`）
+- `--results`: テスト結果ファイルのパス（省略時: `test-results.xml`）
+- `--project`: プロジェクトパス（省略時: カレントディレクトリ）
+
+> **注意:** `-runTests` と `-quit` を同時に指定すると Unity が終了前にテストを中断する。
+> `unity_utils.run_unity` は `-runTests` が引数に含まれる場合に限り `-quit` を自動付加しない。
 
 ### activate.py
 
@@ -137,6 +178,11 @@ npm run build
 1. `generate-alf` action または `activate.py generate-alf` で ALF ファイルを生成
 2. [https://license.unity3d.com/manual](https://license.unity3d.com/manual) でシリアルキーを入力して ULF を取得
 3. ULF ファイルを GitHub Secret（`UNITY_LICENSE_LINUX` / `UNITY_LICENSE_WINDOWS`）に格納する
+
+## このファイルのメンテナンス
+
+ディレクトリ構造・参照形式・規約に変更が生じた場合は、このファイルを同時に更新すること。
+Claude がリポジトリを変更する際も、CLAUDE.md の記述が実態と乖離する場合は自動的に更新する。
 
 ## action 作成・改修の規約
 
