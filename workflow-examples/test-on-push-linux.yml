@@ -1,0 +1,15 @@
+name: Test on Push(Linux)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main # TODO: ブランチを必要に応じて変更してください
+
+jobs:
+  test:
+    uses: synSophia/ss-fleet-ci/.github/workflows/test-linux.yml@main
+    with:
+      container-image: registry.internal.syn-sophia.net/<project>/unityci/editor:<tag>  # TODO: イメージを変更してください
+    secrets:
+      unity-license: ${{ secrets.UNITY_LICENSE_LINUX }}

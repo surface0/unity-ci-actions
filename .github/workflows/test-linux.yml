@@ -1,0 +1,81 @@
+name: Unity Linux テスト
+
+on:
+  workflow_call:
+    inputs:
+      container-image:
+        description: 'テストに使用する Docker イメージ'
+        required: true
+        type: string
+      platform:
+        description: 'テストプラットフォーム（EditMode または PlayMode）'
+        required: false
+        type: string
+        default: 'EditMode'
+    secrets:
+      unity-license:
+        description: 'Unity ライセンスファイル（ULF）の内容'
+        required: true
+
+jobs:
+  test:
+    runs-on: [self-hosted, ubuntu]
+    container:
+      image: ${{ inputs.container-image }}
+      # ジョブコンテナで実行する場合は持続的キャッシュの保存先は明示的にマウントする必要がある
+      volumes:
+        - "/var/actions-runner-persistent-caches:/var/actions-runner-persistent-caches"
+
+    steps:
+    - name: リポジトリをチェックアウトする
+      uses: actions/checkout@v4
+      # lfs: true は指定しない。LFS オブジェクトはキャッシュ復元後に差分取得する
+
+    - name: Python をセットアップする
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
+
+    - name: Git LFS をインストールする
+      run: git lfs install
+      shell: bash
+
+    # LFS キャッシュのセーブは lfs-cache-daily.yml のみで行う
+    - name: Git LFS キャッシュを復元する
+      uses: synSophia/ss-fleet-ci/actions/cache-lfs@main
+      with:
+        cache-key: ${{ github.event.repository.name }}-lfs
+        skip-save: 'true'
+
+    # キャッシュ復元後に差分だけ取得することで全件ダウンロードを回避する
+    - name: Git LFS オブジェクトを差分取得する
+      run: git lfs pull
+      shell: bash
+
+    - name: Unity バージョンを取得する
+      id: get_unity_version
+      uses: synSophia/ss-fleet-ci/actions/get-unity-version@main
+
+    # job 成功時にポストステップで自動セーブされる
+    - name: Unity Library キャッシュを復元する
+      uses: synSophia/ss-fleet-ci/actions/cache-library@main
+      with:
+        unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
+
+    - name: Unity ライセンスを認証する
+      uses: synSophia/ss-fleet-ci/actions/activate-unity-license@main
+      with:
+        license-content: ${{ secrets.unity-license }}
+
+    - name: Unity テストを実行する
+      uses: synSophia/ss-fleet-ci/actions/run-tests@main
+      with:
+        platform: ${{ inputs.platform }}
+        results: test-results.xml
+
+    - name: テスト結果をアップロードする
+      uses: actions/upload-artifact@v4
+      if: always() # テスト失敗時もアップロードする
+      with:
+        name: test-results-linux
+        path: test-results.xml
