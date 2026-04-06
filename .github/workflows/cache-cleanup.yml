@@ -17,6 +17,6 @@ jobs:
     runs-on: [self-hosted, "${{ matrix.runner }}"]
     steps:
       - name: 古いキャッシュファイルを削除する
-        uses: synSophia/ss-fleet-ci/actions/cache-purge@main
+        uses: synSophia/ss-fleet-ci/actions/cache-purge@v1
         with:
           days: ${{ inputs.days }}

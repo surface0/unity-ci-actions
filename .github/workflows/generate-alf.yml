@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ALF を生成してアップロードする
-        uses: synSophia/ss-fleet-ci/actions/generate-alf@main
+        uses: synSophia/ss-fleet-ci/actions/generate-alf@v1
 
   generate-alf-linux:
     if: inputs.platform == 'Linux'
@@ -34,4 +34,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ALF を生成してアップロードする
-        uses: synSophia/ss-fleet-ci/actions/generate-alf@main
+        uses: synSophia/ss-fleet-ci/actions/generate-alf@v1

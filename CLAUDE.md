@@ -43,7 +43,7 @@ workflow-examples/        # 利用側リポジトリ向けのワークフロー�
 ワークフローから composite action を参照する形式:
 
 ```yaml
-uses: synSophia/ss-fleet-ci/actions/<action-name>@main
+uses: synSophia/ss-fleet-ci/actions/<action-name>@v1
 ```
 
 reusable workflow を参照する形式:
@@ -51,7 +51,7 @@ reusable workflow を参照する形式:
 ```yaml
 jobs:
   my-job:
-    uses: synSophia/ss-fleet-ci/.github/workflows/<workflow-name>.yml@main
+    uses: synSophia/ss-fleet-ci/.github/workflows/<workflow-name>.yml@v1
     with:
       some-input: value
     secrets:

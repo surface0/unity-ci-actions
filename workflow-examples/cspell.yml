@@ -6,4 +6,4 @@ on:
 
 jobs:
   cspell:
-    uses: synSophia/ss-fleet-ci/.github/workflows/cspell.yml@main
+    uses: synSophia/ss-fleet-ci/.github/workflows/cspell.yml@v1

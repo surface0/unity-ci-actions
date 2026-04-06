@@ -8,6 +8,6 @@ on:
 
 jobs:
   test:
-    uses: synSophia/ss-fleet-ci/.github/workflows/test-windows.yml@main
+    uses: synSophia/ss-fleet-ci/.github/workflows/test-windows.yml@v1
     secrets:
       unity-license: ${{ secrets.UNITY_LICENSE_WINDOWS }}

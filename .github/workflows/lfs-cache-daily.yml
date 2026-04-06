@@ -17,7 +17,7 @@ jobs:
 
     # 既存キャッシュを復元したうえで差分取得 → job 成功時にポストステップで最新状態を保存
     - name: Git LFS キャッシュを復元する
-      uses: synSophia/ss-fleet-ci/actions/cache-lfs@main
+      uses: synSophia/ss-fleet-ci/actions/cache-lfs@v1
       with:
         cache-key: ${{ github.event.repository.name }}-lfs-latest
         # skip-save は指定しない（デフォルト false = 自動セーブ）
