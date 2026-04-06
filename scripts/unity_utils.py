@@ -108,7 +108,8 @@ def run_unity(unity: Path, project: Path | None, unity_args: list[str], dry_run:
         
     cmd.extend(unity_args)
     
-    if "-quit" not in unity_args:
+    # -runTests は Unity がテスト完了後に自動で終了するため -quit を付加しない
+    if "-quit" not in unity_args and "-runTests" not in unity_args:
         cmd.append("-quit")
         
     # ログを標準出力に流す
