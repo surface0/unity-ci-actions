@@ -1,0 +1,34 @@
+name: Git LFS キャッシュ日次更新
+
+on:
+  workflow_call:
+
+jobs:
+  cache:
+    runs-on: [self-hosted, ubuntu]
+    steps:
+    - name: リポジトリをチェックアウトする
+      uses: actions/checkout@v4
+      # lfs: true は指定しない。LFS オブジェクトはキャッシュ復元後に差分取得する
+
+    - name: Git LFS をインストールする
+      run: git lfs install
+      shell: bash
+
+    # 既存キャッシュを復元したうえで差分取得 → job 成功時にポストステップで最新状態を保存
+    - name: Git LFS キャッシュを復元する
+      uses: synSophia/ss-fleet-ci/actions/cache-lfs@main
+      with:
+        cache-key: ${{ github.event.repository.name }}-lfs-latest
+        # skip-save は指定しない（デフォルト false = 自動セーブ）
+
+    # キャッシュ復元後に差分だけ取得することで全件ダウンロードを回避する
+    - name: Git LFS オブジェクトを差分取得する
+      run: git lfs pull
+      shell: bash
+
+    - name: タイムスタンプを出力する
+      run: |
+        date_str=$(date +"%Y-%m-%d %H:%M:%S")
+        echo "LFS cache updated at: $date_str"
+      shell: bash

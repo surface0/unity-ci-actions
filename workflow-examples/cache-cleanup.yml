@@ -12,15 +12,6 @@ on:
 
 jobs:
   cleanup:
-    strategy:
-      matrix:
-        runner: [linux-01, windows-01]
-    runs-on: [self-hosted, "${{ matrix.runner }}"]
-    steps:
-      - name: Purge old cache files
-        run: |
-          python "$GITHUB_WORKSPACE/.github/ss-fleet-ci/scripts/cache.py" \
-            --cache-dir "$PERSISTENT_CACHE_DIR" \
-            purge \
-            --days ${{ inputs.days || 14 }}
-        shell: bash
+    uses: synSophia/ss-fleet-ci/.github/workflows/cache-cleanup.yml@main
+    with:
+      days: ${{ fromJSON(inputs.days || '14') }}

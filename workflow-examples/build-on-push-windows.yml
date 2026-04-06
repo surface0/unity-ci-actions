@@ -1,73 +1,19 @@
 name: Build on Push(Windows)
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - feature/build-ci-linux # TODO: メインブランチ以外を対象にする場合はここを変更してください
-
-env:
-  NX_ADDON_NAME: 'Unity6000.3.4_LTS-NXAddon20.5.14-Unity6.3'
+      - main # TODO: ブランチを必要に応じて変更してください
 
 jobs:
   build:
-    runs-on: [self-hosted, Windows, Unity, Switch]
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
-      # lfs: true は指定しない。LFS オブジェクトはキャッシュ復元後に差分取得する
-
-    - name: Git LFS Install
-      run: git lfs install
-      shell: bash
-
-    # LFS キャッシュのセーブは lfs-cache-daily.yml のみで行う
-    - name: Git LFS キャッシュを復元する
-      uses: ./.github/ss-fleet-ci/actions/cache-lfs
-      with:
-        cache-key: ${{ github.event.repository.name }}-lfs
-        skip-save: 'true'
-
-    # キャッシュ復元後に差分だけ取得することで全件ダウンロードを回避する
-    - name: Git LFS オブジェクトを差分取得する
-      run: git lfs pull
-      shell: bash
-
-    - name: Unity バージョンを取得する
-      id: get_unity_version
-      uses: ./.github/ss-fleet-ci/actions/get-unity-version
-
-    # job 成功時にポストステップで自動セーブされる
-    - name: NuGet パッケージキャッシュを復元する
-      uses: ./.github/ss-fleet-ci/actions/cache-generic
-      with:
-        target-dir: Packages/nuget-packages/InstalledPackages
-        cache-key: ${{ github.event.repository.name }}-nuget-${{ hashFiles('Packages/nuget-packages/packages.config') }}
-        restore-keys: ${{ github.event.repository.name }}-nuget-
-
-    # job 成功時にポストステップで自動セーブされる
-    - name: Unity Library キャッシュを復元する
-      uses: ./.github/ss-fleet-ci/actions/cache-library
-      with:
-        unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
-
-    - name: Unity ライセンスを認証する
-      uses: ./.github/ss-fleet-ci/actions/activate-unity-license
-      with:
-        license-content: ${{ secrets.UNITY_LICENSE_WINDOWS }}
-
-    - name: Nintendo SDK をセットアップする
-      uses: ./.github/ss-fleet-ci/actions/setup-nintendo-sdk
-
-    - name: Unity ビルドを実行する
-      # build.pyスクリプトを実行してビルドします
-      # C#スクリプト(BuildScript.cs)に記述されている `Build` メソッドを呼び出します
-      run: python .github/ss-fleet-ci/scripts/build.py --method BuildScript.Build --target Switch
-      shell: bash
-
-    - name: ビルド成果物を移動する
-      run: |
-        destination="D:/Lily2/Build"
-        mkdir -p "$destination"
-        mv ./Build/* "$destination/"
-      shell: bash
+    uses: synSophia/ss-fleet-ci/.github/workflows/build-windows.yml@main
+    with:
+      nx-addon-name: 'Unity6000.3.4_LTS-NXAddon20.5.14-Unity6.3'  # TODO: NX アドオン名を変更してください
+      build-method: BuildScript.Build  # TODO: ビルドメソッドを変更してください
+      build-target: Switch
+      artifact-source: './Build'  # TODO: 成果物のソースパスを変更してください（不要な場合は削除）
+      artifact-destination: 'D:/Build'  # TODO: 成果物の移動先を変更してください（不要な場合は削除）
+    secrets:
+      unity-license: ${{ secrets.UNITY_LICENSE_WINDOWS }}

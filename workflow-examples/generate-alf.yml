@@ -2,25 +2,18 @@ name: Generate Unity ALF
 
 on:
   workflow_dispatch:
-    
+    inputs:
+      platform:
+        description: 'プラットフォーム'
+        required: true
+        type: choice
+        options:
+          - Windows
+          - Linux
+
 jobs:
-  generate-alf-windows:
-    runs-on: [self-hosted, Windows, Unity]
-    steps:
-
-    - name: Checkout repository
-      uses: actions/checkout@v6
-
-    - name: Generate and Upload ALF
-      uses: ./.github/ss-fleet-ci/actions/generate-alf
-
-  generate-alf-linux:
-    runs-on: [self-hosted, ubuntu]
-    container:
-      image: registry.internal.syn-sophia.net/switch-gyro-camera-demo/unityci/editor:ubuntu-6000.3.4f1-linux-il2cpp-3.2.2-v1
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
-
-    - name: Generate and Upload ALF
-      uses: ./.github/ss-fleet-ci/actions/generate-alf
+  generate:
+    uses: synSophia/ss-fleet-ci/.github/workflows/generate-alf.yml@main
+    with:
+      platform: ${{ inputs.platform }}
+      container-image: registry.internal.syn-sophia.net/<project>/unityci/editor:<tag>  # TODO: イメージを変更してください（Linux の場合に使用）

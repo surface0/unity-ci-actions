@@ -1,0 +1,22 @@
+name: キャッシュクリーンアップ
+
+on:
+  workflow_call:
+    inputs:
+      days:
+        description: '削除対象とするキャッシュの経過日数'
+        required: false
+        type: number
+        default: 14
+
+jobs:
+  cleanup:
+    strategy:
+      matrix:
+        runner: [linux-01, windows-01]
+    runs-on: [self-hosted, "${{ matrix.runner }}"]
+    steps:
+      - name: 古いキャッシュファイルを削除する
+        uses: synSophia/ss-fleet-ci/actions/cache-purge@main
+        with:
+          days: ${{ inputs.days }}

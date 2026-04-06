@@ -2,28 +2,8 @@ name: CSpell
 
 on:
   pull_request:
+  push:
 
 jobs:
   cspell:
-    name: Spell Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Run CSpell
-        run: |
-          npx --yes cspell lint --config cspell.json --no-progress > cspell-output.txt 2>&1 || {
-            cat cspell-output.txt
-            {
-              echo "## Spell Check Failed"
-              echo ""
-              count=$(grep -c "Unknown word" cspell-output.txt || true)
-              echo "スペルエラーが **${count} 件** 検出されました。"
-              echo ""
-              echo "| File | Line | Col | Word |"
-              echo "|------|-----:|----:|------|"
-              awk 'match($0, /^(.+):([0-9]+):([0-9]+) - Unknown word \((.+)\)/, a) { print "| `" a[1] "` | " a[2] " | " a[3] " | `" a[4] "` |" }' cspell-output.txt
-            } >> $GITHUB_STEP_SUMMARY
-            exit 1
-          }
-        shell: bash
+    uses: synSophia/ss-fleet-ci/.github/workflows/cspell.yml@main

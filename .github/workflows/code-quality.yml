@@ -1,0 +1,111 @@
+name: C# コード品質チェック
+
+on:
+  workflow_call:
+    inputs:
+      container-image:
+        description: 'ビルドに使用する Docker イメージ'
+        required: true
+        type: string
+      solution:
+        description: 'ソリューションファイルのパス'
+        required: true
+        type: string
+      format-include:
+        description: 'フォーマットチェック対象のパス（--include に渡す値）'
+        required: false
+        type: string
+        default: ''
+      inspectcode-include:
+        description: '静的解析対象のパス（--include に渡す値）'
+        required: false
+        type: string
+        default: ''
+      nuget-dir:
+        description: 'NuGet パッケージのインストール先ディレクトリ'
+        required: false
+        type: string
+        default: 'Packages/nuget-packages/InstalledPackages'
+      nuget-config:
+        description: 'NuGet packages.config のパス（キャッシュキーのハッシュに使用）'
+        required: false
+        type: string
+        default: 'Packages/nuget-packages/packages.config'
+    secrets:
+      unity-license:
+        description: 'Unity ライセンスファイル（ULF）の内容'
+        required: true
+      github-token:
+        description: 'GitHub Token（reviewdog の check 書き込みに使用）'
+        required: true
+
+jobs:
+  check:
+    name: C# コード品質チェック
+    runs-on: [self-hosted, ubuntu]
+    permissions:
+      checks: write
+      contents: read
+    container:
+      image: ${{ inputs.container-image }}
+      # ジョブコンテナで実行する場合は持続的キャッシュの保存先は明示的にマウントする必要がある
+      volumes:
+        - "/var/actions-runner-persistent-caches:/var/actions-runner-persistent-caches"
+
+    steps:
+      - name: リポジトリをチェックアウトする
+        uses: actions/checkout@v4
+
+      - name: Python をセットアップする
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      # job 成功時にポストステップで自動セーブされる
+      - name: NuGet パッケージキャッシュを復元する
+        uses: synSophia/ss-fleet-ci/actions/cache-generic@main
+        with:
+          target-dir: ${{ inputs.nuget-dir }}
+          cache-key: ${{ github.event.repository.name }}-nuget-${{ hashFiles(inputs.nuget-config) }}
+          restore-keys: ${{ github.event.repository.name }}-nuget-
+
+      - name: Unity バージョンを取得する
+        id: get_unity_version
+        uses: synSophia/ss-fleet-ci/actions/get-unity-version@main
+
+      # job 成功時にポストステップで自動セーブされる
+      - name: Unity Library キャッシュを復元する
+        uses: synSophia/ss-fleet-ci/actions/cache-library@main
+        with:
+          unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
+
+      - name: Unity ライセンスを認証する
+        uses: synSophia/ss-fleet-ci/actions/activate-unity-license@main
+        with:
+          license-content: ${{ secrets.unity-license }}
+
+      - name: ソリューションファイルを生成する
+        uses: synSophia/ss-fleet-ci/actions/run-build@main
+        with:
+          method: Packages.Rider.Editor.RiderScriptEditor.SyncSolution
+          target: StandaloneLinux64
+
+      - name: フォーマットをチェックする
+        id: format_check
+        continue-on-error: true
+        uses: synSophia/ss-fleet-ci/actions/format-check@main
+        with:
+          solution: ${{ inputs.solution }}
+          include: ${{ inputs.format-include }}
+
+      - name: 静的解析を実行する
+        uses: synSophia/ss-fleet-ci/actions/inspectcode@main
+        with:
+          solution: ${{ inputs.solution }}
+          include: ${{ inputs.inspectcode-include }}
+          github-token: ${{ secrets.github-token }}
+
+      - name: フォーマットチェックが失敗していた場合はエラーにする
+        if: steps.format_check.outcome == 'failure'
+        run: exit 1
+        shell: bash
