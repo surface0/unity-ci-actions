@@ -28,7 +28,7 @@ jobs:
 
     steps:
     - name: リポジトリをチェックアウトする
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       # lfs: true は指定しない。LFS オブジェクトはキャッシュ復元後に差分取得する
 
     - name: Python をセットアップする

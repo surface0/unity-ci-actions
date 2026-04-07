@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: リポジトリをチェックアウトする
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: CSpell を実行する
         uses: synSophia/ss-fleet-ci/actions/cspell@v1

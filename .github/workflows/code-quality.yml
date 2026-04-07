@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: リポジトリをチェックアウトする
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Python をセットアップする
         uses: actions/setup-python@v5

@@ -27,7 +27,7 @@ jobs:
   generate-alf:
     runs-on: [self-hosted, Windows, Unity]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: ALF ファイルを生成する
         uses: synSophia/ss-fleet-ci/actions/generate-alf@v1

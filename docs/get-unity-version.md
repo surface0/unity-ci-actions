@@ -39,5 +39,5 @@ Windows（Git Bash）環境では `cygpath` によるパス変換を自動で行
 
 ## 注意事項
 
-- リポジトリがチェックアウト済みであることが前提です（`actions/checkout@v4` を先に実行する）。
+- リポジトリがチェックアウト済みであることが前提です（`actions/checkout@v6` を先に実行する）。
 - `ProjectSettings/ProjectVersion.txt` が存在しない場合はエラーになります。

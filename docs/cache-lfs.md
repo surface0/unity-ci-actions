@@ -28,7 +28,7 @@ LFS オブジェクトの全件ダウンロードを避けるため、以下の�
 
 ```yaml
 - name: リポジトリをチェックアウトする
-  uses: actions/checkout@v4
+  uses: actions/checkout@v6
   # lfs: true は指定しない
 
 - name: Git LFS をインストールする
