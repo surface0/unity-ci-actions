@@ -1,5 +1,5 @@
-import resolve from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 
 function actionBundle(name, entryName) {
   return {
@@ -9,12 +9,12 @@ function actionBundle(name, entryName) {
       format: 'cjs',
     },
     plugins: [resolve({ preferBuiltins: true }), commonjs()],
-  }
+  };
 }
 
-const cacheActions = ['cache-generic', 'cache-lfs', 'cache-library']
+const cacheActions = ['cache-generic', 'cache-lfs', 'cache-library'];
 
 export default cacheActions.flatMap(name => [
   actionBundle(name, 'main'),
   actionBundle(name, 'post'),
-])
+]);
