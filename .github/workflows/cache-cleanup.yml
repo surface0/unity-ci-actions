@@ -16,6 +16,11 @@ jobs:
         runner: [linux-01, windows-01]
     runs-on: [self-hosted, "${{ matrix.runner }}"]
     steps:
+      - name: Python をセットアップする
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
       - name: 古いキャッシュファイルを削除する
         uses: synSophia/ss-fleet-ci/actions/cache-purge@v1
         with:

@@ -53,13 +53,13 @@ jobs:
         - "/var/actions-runner-persistent-caches:/var/actions-runner-persistent-caches"
 
     steps:
-      - name: リポジトリをチェックアウトする
-        uses: actions/checkout@v6
-
       - name: Python をセットアップする
         uses: actions/setup-python@v5
         with:
           python-version: '3.14'
+
+      - name: リポジトリをチェックアウトする
+        uses: actions/checkout@v6
 
       # job 成功時にポストステップで自動セーブされる
       - name: NuGet パッケージキャッシュを復元する

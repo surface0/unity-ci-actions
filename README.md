@@ -60,6 +60,21 @@ jobs:
 
 ### 共通（Linux / Windows）
 
+**Python のセットアップ**
+
+多くの action が内部で Python スクリプトを使用する。Python はランナーへの事前インストール不要で、このリポジトリの reusable workflow はすべて最初のステップで `actions/setup-python` を実行する。
+
+composite action を直接呼び出す場合は、呼び出し側ワークフローで Python をセットアップすること。
+
+```yaml
+- name: Python をセットアップする
+  uses: actions/setup-python@v5
+  with:
+    python-version: '3.14'
+```
+
+**環境変数**
+
 以下の環境変数をランナー側で設定すること。
 
 | 変数名 | 必須 | 内容 |

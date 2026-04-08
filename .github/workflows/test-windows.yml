@@ -18,6 +18,11 @@ jobs:
     runs-on: [self-hosted, Windows, Unity]
 
     steps:
+    - name: Python をセットアップする
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
+
     - name: リポジトリをチェックアウトする
       uses: actions/checkout@v6
       # lfs: true は指定しない。LFS オブジェクトはキャッシュ復元後に差分取得する
