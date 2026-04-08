@@ -1,13 +1,12 @@
 name: Test on Push(Windows)
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main # TODO: ブランチを必要に応じて変更してください
+  pull_request:
 
 jobs:
   test:
     uses: synSophia/ss-fleet-ci/.github/workflows/test-windows.yml@v1
+    with:
+      platform: EditMode
     secrets:
       unity-license: ${{ secrets.UNITY_LICENSE_WINDOWS }}

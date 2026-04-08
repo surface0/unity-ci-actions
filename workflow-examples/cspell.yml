@@ -2,7 +2,6 @@ name: CSpell
 
 on:
   pull_request:
-  push:
 
 jobs:
   cspell:
