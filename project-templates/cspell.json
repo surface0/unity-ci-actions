@@ -1,0 +1,33 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "files": [
+    "**/*.cs",
+    "**/*.md",
+    "**/*.yml",
+    "**/*.yaml",
+    "**/*.json",
+    "**/*.py"
+  ],
+  "ignorePaths": [
+    "Assets/NintendoSDKPlugin/**",
+    "Library/**",
+    "Packages/**",
+    "ProjectSettings/**",
+    "Logs/**",
+    "Temp/**",
+    "obj/**",
+    "node_modules/**",
+    "package-lock.json",
+    "*.meta",
+    "Build/**"
+  ],
+  "dictionaries": ["project-words"],
+  "dictionaryDefinitions": [
+    {
+      "name": "project-words",
+      "path": ".cspell/project-words.txt",
+      "addWords": true
+    }
+  ]
+}

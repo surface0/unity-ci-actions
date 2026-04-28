@@ -1,0 +1,39 @@
+# Unity API
+Prefs
+Mathf
+Lerp
+Slerp
+Rigidbody
+MonoBehaviour
+ScriptableObject
+Raycast
+Raycasts
+Serializable
+SerializeField
+LayerMask
+Coroutine
+Awake
+Instantiate
+Quaternion
+Euler
+
+# UniTask / Cysharp
+Cysharp
+cysharp
+unitask
+UniTask
+
+# CI / Static Analysis
+unityci
+sarif
+SARIF
+Sarif
+inspectcode
+dorny
+reviewdog
+REVIEWDOG
+zstandard
+HKLM
+ESET
+
+# プロジェクト固有の単語をここに追記する
