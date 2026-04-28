@@ -1,0 +1,9 @@
+name: Daily Git LFS Cache Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎日 0:00 UTC
+
+jobs:
+  cache:
+    uses: surface0/unity-ci-actions/.github/workflows/lfs-cache-daily.yml@v1

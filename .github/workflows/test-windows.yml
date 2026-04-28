@@ -1,0 +1,80 @@
+name: Unity Windows テスト
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: 'テストプラットフォーム（EditMode または PlayMode）'
+        required: false
+        type: string
+        default: 'EditMode'
+      use-lfs:
+        description: 'Git LFS を使用するか（LFS を使用しないプロジェクトでは false のまま）'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      unity-license:
+        description: 'Unity ライセンスファイル（ULF）の内容'
+        required: true
+
+jobs:
+  test:
+    runs-on: [self-hosted, Windows, Unity]
+
+    steps:
+    - name: Python をセットアップする
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
+
+    - name: リポジトリをチェックアウトする
+      uses: actions/checkout@v6
+      # lfs: true は指定しない。use-lfs が true の場合はキャッシュ復元後に差分取得する
+
+    - name: Git LFS をインストールする
+      if: inputs.use-lfs
+      run: git lfs install
+      shell: bash
+
+    # LFS キャッシュのセーブは lfs-cache-daily.yml のみで行う
+    - name: Git LFS キャッシュを復元する
+      if: inputs.use-lfs
+      uses: surface0/unity-ci-actions/actions/cache-lfs@v1
+      with:
+        cache-key: ${{ github.event.repository.name }}-lfs
+        skip-save: 'true'
+
+    # キャッシュ復元後に差分だけ取得することで全件ダウンロードを回避する
+    - name: Git LFS オブジェクトを差分取得する
+      if: inputs.use-lfs
+      run: git lfs pull
+      shell: bash
+
+    - name: Unity バージョンを取得する
+      id: get_unity_version
+      uses: surface0/unity-ci-actions/actions/get-unity-version@v1
+
+    # job 成功時にポストステップで自動セーブされる
+    - name: Unity Library キャッシュを復元する
+      uses: surface0/unity-ci-actions/actions/cache-library@v1
+      with:
+        unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
+
+    - name: Unity ライセンスを認証する
+      uses: surface0/unity-ci-actions/actions/activate-unity-license@v1
+      with:
+        license-content: ${{ secrets.unity-license }}
+
+    - name: Unity テストを実行する
+      uses: surface0/unity-ci-actions/actions/run-tests@v1
+      with:
+        platform: ${{ inputs.platform }}
+        results: test-results.xml
+
+    - name: テスト結果をアップロードする
+      uses: actions/upload-artifact@v4
+      if: always() # テスト失敗時もアップロードする
+      with:
+        name: test-results-windows
+        path: test-results.xml

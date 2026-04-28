@@ -1,0 +1,22 @@
+name: 'Unity テスト実行'
+description: 'test.py を使って Unity をバッチモードでテスト実行する'
+inputs:
+  platform:
+    description: 'テストプラットフォーム（EditMode または PlayMode）'
+    required: false
+    default: 'EditMode'
+  results:
+    description: 'テスト結果ファイルのパス（JUnit XML 形式）'
+    required: false
+    default: 'test-results.xml'
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        if command -v cygpath > /dev/null 2>&1; then
+          script_path=$(cygpath -u "$GITHUB_ACTION_PATH/../../scripts/test.py")
+        else
+          script_path="$GITHUB_ACTION_PATH/../../scripts/test.py"
+        fi
+        python "$script_path" --platform ${{ inputs.platform }} --results ${{ inputs.results }}
+      shell: bash

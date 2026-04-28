@@ -1,0 +1,32 @@
+name: 'C# フォーマットチェック'
+description: 'dotnet format でフォーマットを検証し、エラー時に Step Summary にレポートを出力する'
+inputs:
+  solution:
+    description: 'ソリューションファイルのパス'
+    required: true
+  include:
+    description: 'チェック対象のパス（--include に渡す値）'
+    required: false
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        ARGS="--verify-no-changes ${{ inputs.solution }} --report format-report.json"
+        if [ -n "${{ inputs.include }}" ]; then
+          ARGS="$ARGS --include ${{ inputs.include }}"
+        fi
+        if ! dotnet format $ARGS; then
+          {
+            echo "## Format Check Failed"
+            echo ""
+            count=$(jq '[.[].FileChanges[]] | length' format-report.json)
+            echo "フォーマットエラーが **${count} 件** 検出されました。"
+            echo ""
+            echo "| File | Line | Col | Rule | Description |"
+            echo "|------|-----:|----:|------|-------------|"
+            jq -r '.[] | .FilePath as $file | .FileChanges[] | "| `\($file)` | \(.LineNumber) | \(.CharNumber) | `\(.DiagnosticId)` | \(.FormatDescription) |"' format-report.json
+          } >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+      shell: bash

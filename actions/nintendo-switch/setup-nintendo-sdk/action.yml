@@ -1,0 +1,17 @@
+name: 'Nintendo SDK 環境セットアップ'
+description: 'NINTENDO_ROOT と NX_ADDON_NAME から SDK パスを組み立てて NINTENDO_SDK_ROOT に設定する'
+runs:
+  using: "composite"
+  steps:
+    - name: NINTENDO_SDK_ROOT を設定する
+      shell: bash
+      run: |
+        # NINTENDO_ROOT, NX_ADDON_NAME はランナーまたはワークフローの env で設定する
+        # どちらかが未設定の場合はスキップ（Switch ビルド以外のジョブでも安全に使用できる）
+        if [[ -n "${NINTENDO_ROOT}" && -n "${NX_ADDON_NAME}" ]]; then
+          sdk_root="${NINTENDO_ROOT}/${NX_ADDON_NAME}/NintendoSDK"
+          echo "NINTENDO_SDK_ROOT=${sdk_root}" >> $GITHUB_ENV
+          echo "Set NINTENDO_SDK_ROOT to ${sdk_root}"
+        else
+          echo "NINTENDO_ROOT or NX_ADDON_NAME environment variables not set. Skipping."
+        fi
