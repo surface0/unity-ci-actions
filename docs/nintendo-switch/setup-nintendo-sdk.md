@@ -36,7 +36,7 @@ Composite Action
 ```yaml
 jobs:
   build:
-    runs-on: [self-hosted, Windows, Unity]
+    runs-on: [self-hosted, Windows, Unity, Switch]
     env:
       NX_ADDON_NAME: ${{ inputs.nx-addon-name }}
     steps:
