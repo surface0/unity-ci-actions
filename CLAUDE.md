@@ -38,6 +38,11 @@ scripts/                  # action 内から呼び出す Python スクリプト
   get_unity_version.py    # ProjectVersion.txt からバージョンを stdout に出力
   unity_utils.py          # Unity 実行ファイル検索・起動のユーティリティ
 workflow-examples/        # 利用側リポジトリ向けのワークフロー記述例
+project-templates/        # Unity プロジェクトに配置する設定ファイルのひな型
+  cspell.json             # CSpell 設定（スペルチェック）
+  .cspell/
+    project-words.txt     # プロジェクト固有単語リスト
+  .editorconfig           # C# コーディング規約（Unity C# Style Guide 準拠）
 ```
 
 ## リポジトリとして参照する

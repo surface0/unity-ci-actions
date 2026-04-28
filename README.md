@@ -52,6 +52,18 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
 |---|---|
 | `nintendo-switch/build-windows.yml` | Windows ランナーで Nintendo Switch ビルドを実行する |
 
+## プロジェクトひな型
+
+Unity プロジェクト側に配置する設定ファイルのひな型を [project-templates/](project-templates/) に収録している。
+
+| ファイル | 配置先 | 概要 |
+|---|---|---|
+| [cspell.json](project-templates/cspell.json) | プロジェクトルート | CSpell スペルチェック設定 |
+| [.cspell/project-words.txt](project-templates/.cspell/project-words.txt) | プロジェクトルート | プロジェクト固有単語リスト（Unity API 名など収録済み） |
+| [.editorconfig](project-templates/.editorconfig) | プロジェクトルート（`.sln` と同階層） | C# コーディング規約（Unity C# Style Guide 準拠） |
+
+`cspell.json` と `.cspell/project-words.txt` は `cspell` / `code-quality` ワークフローと組み合わせて使用する。`.editorconfig` は `code-quality` ワークフローの `dotnet format` および ReSharper が参照する。
+
 ## 参照形式
 
 ```yaml
