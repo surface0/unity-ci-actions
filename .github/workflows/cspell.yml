@@ -2,11 +2,17 @@ name: スペルチェック
 
 on:
   workflow_call:
+    inputs:
+      runs-on:
+        description: 'ジョブを実行するランナーラベル（JSON文字列または配列）'
+        required: false
+        type: string
+        default: '"ubuntu-latest"'
 
 jobs:
   cspell:
     name: スペルチェック
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJson(inputs.runs-on) }}
     steps:
       - name: リポジトリをチェックアウトする
         uses: actions/checkout@v6

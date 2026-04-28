@@ -31,6 +31,11 @@ on:
         required: false
         type: string
         default: 'Packages/nuget-packages/packages.config'
+      runs-on:
+        description: 'ジョブを実行するランナーラベル（JSON文字列または配列）'
+        required: false
+        type: string
+        default: '["self-hosted", "ubuntu"]'
     secrets:
       unity-license:
         description: 'Unity ライセンスファイル（ULF）の内容'
@@ -42,7 +47,7 @@ on:
 jobs:
   check:
     name: C# コード品質チェック
-    runs-on: [self-hosted, ubuntu]
+    runs-on: ${{ fromJson(inputs.runs-on) }}
     permissions:
       checks: write
       contents: read

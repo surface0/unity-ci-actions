@@ -13,6 +13,11 @@ on:
         required: false
         type: boolean
         default: false
+      runs-on:
+        description: 'ジョブを実行するランナーラベル（JSON文字列または配列）'
+        required: false
+        type: string
+        default: '["self-hosted", "Windows", "Unity"]'
     secrets:
       unity-license:
         description: 'Unity ライセンスファイル（ULF）の内容'
@@ -20,7 +25,7 @@ on:
 
 jobs:
   test:
-    runs-on: [self-hosted, Windows, Unity]
+    runs-on: ${{ fromJson(inputs.runs-on) }}
 
     steps:
     - name: Python をセットアップする
