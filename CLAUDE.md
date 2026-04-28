@@ -1,7 +1,7 @@
-# ss-fleet-ci
+# Unity CI Actions
 
-社内のセルフホストランナーで Unity CI を実行するための、共有 composite action とスクリプトのリポジトリ。
-`synSophia` Org 内のプロジェクトから GitHub Actions のリポジトリ参照で使用する（サブモジュールではない）。
+セルフホストランナーで Unity CI を実行するための、共有 composite action とスクリプトのリポジトリ。
+GitHub Actions のリポジトリ参照で使用する（サブモジュールではない）。
 
 ## ディレクトリ構造
 
@@ -38,12 +38,12 @@ scripts/                  # action 内から呼び出す Python スクリプト
 workflow-examples/        # 利用側リポジトリ向けのワークフロー記述例
 ```
 
-## Org リポジトリとして参照する
+## リポジトリとして参照する
 
 ワークフローから composite action を参照する形式:
 
 ```yaml
-uses: synSophia/ss-fleet-ci/actions/<action-name>@v1
+uses: surface0/unity-ci-actions/actions/<action-name>@v1
 ```
 
 reusable workflow を参照する形式:
@@ -51,17 +51,12 @@ reusable workflow を参照する形式:
 ```yaml
 jobs:
   my-job:
-    uses: synSophia/ss-fleet-ci/.github/workflows/<workflow-name>.yml@v1
+    uses: surface0/unity-ci-actions/.github/workflows/<workflow-name>.yml@v1
     with:
       some-input: value
     secrets:
       some-secret: ${{ secrets.SOME_SECRET }}
 ```
-
-### 利用側リポジトリの設定
-
-- `ss-fleet-ci` の Settings → Actions → Access →
-  **「Accessible from repositories in the 'synSophia' organization」** を有効にすること
 
 ### スクリプトのパス参照
 

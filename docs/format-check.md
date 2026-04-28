@@ -38,7 +38,7 @@ Composite Action
 
 ```yaml
 - name: フォーマットをチェックする
-  uses: synSophia/ss-fleet-ci/actions/format-check@v1
+  uses: surface0/unity-ci-actions/actions/format-check@v1
   with:
     solution: MyProject.sln
 ```
@@ -47,7 +47,7 @@ Composite Action
 
 ```yaml
 - name: フォーマットをチェックする
-  uses: synSophia/ss-fleet-ci/actions/format-check@v1
+  uses: surface0/unity-ci-actions/actions/format-check@v1
   with:
     solution: MyProject.sln
     include: Assets/Scripts/
@@ -59,12 +59,12 @@ Composite Action
 - name: フォーマットをチェックする
   id: format_check
   continue-on-error: true
-  uses: synSophia/ss-fleet-ci/actions/format-check@v1
+  uses: surface0/unity-ci-actions/actions/format-check@v1
   with:
     solution: ${{ inputs.solution }}
 
 - name: 静的解析を実行する
-  uses: synSophia/ss-fleet-ci/actions/inspectcode@v1
+  uses: surface0/unity-ci-actions/actions/inspectcode@v1
   with:
     solution: ${{ inputs.solution }}
     github-token: ${{ secrets.github-token }}

@@ -40,7 +40,7 @@ jobs:
     # LFS キャッシュのセーブは lfs-cache-daily.yml のみで行う
     - name: Git LFS キャッシュを復元する
       if: inputs.use-lfs
-      uses: synSophia/ss-fleet-ci/actions/cache-lfs@v1
+      uses: surface0/unity-ci-actions/actions/cache-lfs@v1
       with:
         cache-key: ${{ github.event.repository.name }}-lfs
         skip-save: 'true'
@@ -53,21 +53,21 @@ jobs:
 
     - name: Unity バージョンを取得する
       id: get_unity_version
-      uses: synSophia/ss-fleet-ci/actions/get-unity-version@v1
+      uses: surface0/unity-ci-actions/actions/get-unity-version@v1
 
     # job 成功時にポストステップで自動セーブされる
     - name: Unity Library キャッシュを復元する
-      uses: synSophia/ss-fleet-ci/actions/cache-library@v1
+      uses: surface0/unity-ci-actions/actions/cache-library@v1
       with:
         unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
 
     - name: Unity ライセンスを認証する
-      uses: synSophia/ss-fleet-ci/actions/activate-unity-license@v1
+      uses: surface0/unity-ci-actions/actions/activate-unity-license@v1
       with:
         license-content: ${{ secrets.unity-license }}
 
     - name: Unity テストを実行する
-      uses: synSophia/ss-fleet-ci/actions/run-tests@v1
+      uses: surface0/unity-ci-actions/actions/run-tests@v1
       with:
         platform: ${{ inputs.platform }}
         results: test-results.xml

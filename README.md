@@ -1,8 +1,8 @@
-# ss-fleet-ci
+# Unity CI Actions
 
-シンソフィア社内の開発支援サーバー群 **SS Fleet** のセルフホストランナーで Unity CI を実行するための、共有 composite actions と reusable workflows のリポジトリ。
+セルフホストランナーで Unity CI を実行するための、共有 composite actions と reusable workflows のリポジトリ。
 
-`synSophia` Org 内のプロジェクトから GitHub Actions のリポジトリ参照で使用する（サブモジュールではない）。
+GitHub Actions のリポジトリ参照で使用する（サブモジュールではない）。
 
 ## Actions 一覧
 
@@ -44,12 +44,12 @@
 
 ```yaml
 # composite action
-uses: synSophia/ss-fleet-ci/actions/<action-name>@v1
+uses: surface0/unity-ci-actions/actions/<action-name>@v1
 
 # reusable workflow
 jobs:
   my-job:
-    uses: synSophia/ss-fleet-ci/.github/workflows/<workflow-name>.yml@v1
+    uses: surface0/unity-ci-actions/.github/workflows/<workflow-name>.yml@v1
     with:
       some-input: value
     secrets:

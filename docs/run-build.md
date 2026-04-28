@@ -29,7 +29,7 @@ Unity がバッチモードで起動し、指定メソッドを実行します�
 
 ```yaml
 - name: Unity ビルドを実行する
-  uses: synSophia/ss-fleet-ci/actions/run-build@v1
+  uses: surface0/unity-ci-actions/actions/run-build@v1
   with:
     method: BuildScript.Build
     target: Switch
@@ -39,7 +39,7 @@ Unity がバッチモードで起動し、指定メソッドを実行します�
 
 ```yaml
 - name: ソリューションファイルを生成する
-  uses: synSophia/ss-fleet-ci/actions/run-build@v1
+  uses: surface0/unity-ci-actions/actions/run-build@v1
   with:
     method: Packages.Rider.Editor.RiderScriptEditor.SyncSolution
     target: StandaloneLinux64
@@ -49,7 +49,7 @@ Unity がバッチモードで起動し、指定メソッドを実行します�
 
 ```yaml
 - name: Unity ビルドを実行する
-  uses: synSophia/ss-fleet-ci/actions/run-build@v1
+  uses: surface0/unity-ci-actions/actions/run-build@v1
   with:
     method: BuildScript.BuildLinux
     target: StandaloneLinux64

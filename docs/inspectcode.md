@@ -40,7 +40,7 @@ permissions:
 
 ```yaml
 - name: 静的解析を実行する
-  uses: synSophia/ss-fleet-ci/actions/inspectcode@v1
+  uses: surface0/unity-ci-actions/actions/inspectcode@v1
   with:
     solution: MyProject.sln
     github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +50,7 @@ permissions:
 
 ```yaml
 - name: 静的解析を実行する
-  uses: synSophia/ss-fleet-ci/actions/inspectcode@v1
+  uses: surface0/unity-ci-actions/actions/inspectcode@v1
   with:
     solution: MyProject.sln
     include: Assets/Scripts/

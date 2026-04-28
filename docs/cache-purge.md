@@ -24,7 +24,7 @@ Composite Action
 
 ```yaml
 - name: 古いキャッシュを削除する
-  uses: synSophia/ss-fleet-ci/actions/cache-purge@v1
+  uses: surface0/unity-ci-actions/actions/cache-purge@v1
   with:
     days: '14'
 ```
@@ -42,7 +42,7 @@ on:
 
 jobs:
   cleanup:
-    uses: synSophia/ss-fleet-ci/.github/workflows/cache-cleanup.yml@v1
+    uses: surface0/unity-ci-actions/.github/workflows/cache-cleanup.yml@v1
 ```
 
 ## 注意事項

@@ -28,11 +28,11 @@ Windows（Git Bash）環境では `cygpath` によるパス変換を自動で行
 ```yaml
 - name: Unity バージョンを取得する
   id: get_unity_version
-  uses: synSophia/ss-fleet-ci/actions/get-unity-version@v1
+  uses: surface0/unity-ci-actions/actions/get-unity-version@v1
 
 # 後続ステップで参照する
 - name: Unity Library キャッシュを復元する
-  uses: synSophia/ss-fleet-ci/actions/cache-library@v1
+  uses: surface0/unity-ci-actions/actions/cache-library@v1
   with:
     unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
 ```

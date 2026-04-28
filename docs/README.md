@@ -1,6 +1,6 @@
-# ss-fleet-ci Actions ドキュメント
+# Unity CI Actions ドキュメント
 
-`synSophia/ss-fleet-ci` が提供する Composite Action / Node Action の一覧です。
+Composite Action / Node Action の一覧です。
 
 ## Actions 一覧
 
@@ -25,7 +25,7 @@
 全ての Action は以下の形式で参照します。
 
 ```yaml
-uses: synSophia/ss-fleet-ci/actions/<action-name>@v1
+uses: surface0/unity-ci-actions/actions/<action-name>@v1
 ```
 
 ## キャッシュ設計

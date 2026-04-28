@@ -30,5 +30,5 @@ runs:
         echo "7. .ulf ファイルをランナー上の安全な場所に配置します。"
         echo ""
         echo "アクティベーションを実行するには:"
-        echo "  python <ss-fleet-ciのパス>/scripts/activate.py activate --license-file <ulfファイルのパス>"
+        echo "  python <このリポジトリのパス>/scripts/activate.py activate --license-file <ulfファイルのパス>"
         echo "=========================================="

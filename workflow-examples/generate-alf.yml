@@ -13,7 +13,7 @@ on:
 
 jobs:
   generate:
-    uses: synSophia/ss-fleet-ci/.github/workflows/generate-alf.yml@v1
+    uses: surface0/unity-ci-actions/.github/workflows/generate-alf.yml@v1
     with:
       platform: ${{ inputs.platform }}
       container-image: registry.internal.syn-sophia.net/<project>/unityci/editor:<tag>  # TODO: イメージを変更してください（Linux の場合に使用）

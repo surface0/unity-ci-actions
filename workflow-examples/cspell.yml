@@ -5,4 +5,4 @@ on:
 
 jobs:
   cspell:
-    uses: synSophia/ss-fleet-ci/.github/workflows/cspell.yml@v1
+    uses: surface0/unity-ci-actions/.github/workflows/cspell.yml@v1

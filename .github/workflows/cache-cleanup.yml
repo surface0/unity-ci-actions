@@ -22,6 +22,6 @@ jobs:
           python-version: '3.14'
 
       - name: 古いキャッシュファイルを削除する
-        uses: synSophia/ss-fleet-ci/actions/cache-purge@v1
+        uses: surface0/unity-ci-actions/actions/cache-purge@v1
         with:
           days: ${{ inputs.days }}

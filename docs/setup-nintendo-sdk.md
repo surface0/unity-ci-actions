@@ -41,10 +41,10 @@ jobs:
       NX_ADDON_NAME: ${{ inputs.nx-addon-name }}
     steps:
       - name: Nintendo SDK をセットアップする
-        uses: synSophia/ss-fleet-ci/actions/setup-nintendo-sdk@v1
+        uses: surface0/unity-ci-actions/actions/setup-nintendo-sdk@v1
 
       - name: Unity ビルドを実行する
-        uses: synSophia/ss-fleet-ci/actions/run-build@v1
+        uses: surface0/unity-ci-actions/actions/run-build@v1
         with:
           method: BuildScript.Build
           target: Switch

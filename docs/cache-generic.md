@@ -32,7 +32,7 @@ Node Action（node20）
 
 ```yaml
 - name: NuGet パッケージキャッシュを復元する
-  uses: synSophia/ss-fleet-ci/actions/cache-generic@v1
+  uses: surface0/unity-ci-actions/actions/cache-generic@v1
   with:
     target-dir: Packages/nuget-packages/InstalledPackages
     cache-key: ${{ github.event.repository.name }}-nuget-${{ hashFiles('Packages/nuget-packages/packages.config') }}
@@ -43,7 +43,7 @@ Node Action（node20）
 
 ```yaml
 - name: キャッシュを読み取り専用で復元する
-  uses: synSophia/ss-fleet-ci/actions/cache-generic@v1
+  uses: surface0/unity-ci-actions/actions/cache-generic@v1
   with:
     target-dir: some/dir
     cache-key: my-cache-key

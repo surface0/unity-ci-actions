@@ -28,7 +28,7 @@ Windows（Git Bash）環境では `cygpath` によるパス変換を自動で行
 
 ```yaml
 - name: Unity テストを実行する
-  uses: synSophia/ss-fleet-ci/actions/run-tests@v1
+  uses: surface0/unity-ci-actions/actions/run-tests@v1
   with:
     platform: EditMode
     results: test-results.xml
@@ -38,7 +38,7 @@ Windows（Git Bash）環境では `cygpath` によるパス変換を自動で行
 
 ```yaml
 - name: Unity テストを実行する
-  uses: synSophia/ss-fleet-ci/actions/run-tests@v1
+  uses: surface0/unity-ci-actions/actions/run-tests@v1
   with:
     platform: EditMode
     results: test-results.xml
@@ -55,7 +55,7 @@ Windows（Git Bash）環境では `cygpath` によるパス変換を自動で行
 
 ```yaml
 - name: PlayMode テストを実行する
-  uses: synSophia/ss-fleet-ci/actions/run-tests@v1
+  uses: surface0/unity-ci-actions/actions/run-tests@v1
   with:
     platform: PlayMode
     results: playmode-results.xml

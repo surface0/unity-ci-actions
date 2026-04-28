@@ -37,14 +37,14 @@ Composite Action
 
 ```yaml
 - name: CSpell を実行する
-  uses: synSophia/ss-fleet-ci/actions/cspell@v1
+  uses: surface0/unity-ci-actions/actions/cspell@v1
 ```
 
 ### 設定ファイルのパスを指定する場合
 
 ```yaml
 - name: CSpell を実行する
-  uses: synSophia/ss-fleet-ci/actions/cspell@v1
+  uses: surface0/unity-ci-actions/actions/cspell@v1
   with:
     config: .cspell/cspell.json
 ```

@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    uses: synSophia/ss-fleet-ci/.github/workflows/test-windows.yml@v1
+    uses: surface0/unity-ci-actions/.github/workflows/test-windows.yml@v1
     with:
       platform: EditMode
     secrets:

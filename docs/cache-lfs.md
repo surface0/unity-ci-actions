@@ -36,7 +36,7 @@ LFS オブジェクトの全件ダウンロードを避けるため、以下の�
   shell: bash
 
 - name: Git LFS キャッシュを復元する
-  uses: synSophia/ss-fleet-ci/actions/cache-lfs@v1
+  uses: surface0/unity-ci-actions/actions/cache-lfs@v1
   with:
     cache-key: ${{ github.event.repository.name }}-lfs
     skip-save: 'true'   # セーブは lfs-cache-daily.yml のみで行う

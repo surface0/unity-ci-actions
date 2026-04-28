@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    uses: synSophia/ss-fleet-ci/.github/workflows/build-windows.yml@v1
+    uses: surface0/unity-ci-actions/.github/workflows/build-windows.yml@v1
     with:
       nx-addon-name: 'Unity6000.3.4_LTS-NXAddon20.5.14-Unity6.3'  # TODO: NX アドオン名を変更してください
       build-method: BuildScript.Build  # TODO: ビルドメソッドを変更してください

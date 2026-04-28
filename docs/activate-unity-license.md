@@ -28,7 +28,7 @@ Windows（Git Bash）環境では `cygpath` によるパス変換を自動で行
 
 ```yaml
 - name: Unity ライセンスを認証する
-  uses: synSophia/ss-fleet-ci/actions/activate-unity-license@v1
+  uses: surface0/unity-ci-actions/actions/activate-unity-license@v1
   with:
     license-content: ${{ secrets.UNITY_LICENSE }}
 ```

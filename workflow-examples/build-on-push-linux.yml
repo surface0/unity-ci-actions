@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    uses: synSophia/ss-fleet-ci/.github/workflows/build-linux.yml@v1
+    uses: surface0/unity-ci-actions/.github/workflows/build-linux.yml@v1
     with:
       container-image: registry.internal.syn-sophia.net/<project>/unityci/editor:<tag>  # TODO: イメージを変更してください
       build-method: BuildScript.BuildLinux  # TODO: ビルドメソッドを変更してください

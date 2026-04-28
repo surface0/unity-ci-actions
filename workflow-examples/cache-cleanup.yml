@@ -12,6 +12,6 @@ on:
 
 jobs:
   cleanup:
-    uses: synSophia/ss-fleet-ci/.github/workflows/cache-cleanup.yml@v1
+    uses: surface0/unity-ci-actions/.github/workflows/cache-cleanup.yml@v1
     with:
       days: ${{ fromJSON(inputs.days || '14') }}

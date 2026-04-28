@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: ALF ファイルを生成する
-        uses: synSophia/ss-fleet-ci/actions/generate-alf@v1
+        uses: surface0/unity-ci-actions/actions/generate-alf@v1
 ```
 
 ## 手動アクティベーション手順
