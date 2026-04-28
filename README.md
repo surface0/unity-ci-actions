@@ -22,7 +22,6 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
 | [inspectcode](docs/inspectcode.md) | ReSharper + reviewdog による C# 静的解析を実行する |
 | [run-build](docs/run-build.md) | Unity バッチモードでビルドを実行する |
 | [run-tests](docs/run-tests.md) | Unity バッチモードでテストを実行する |
-| [setup-nintendo-sdk](docs/nintendo-switch/setup-nintendo-sdk.md) | `NINTENDO_SDK_ROOT` 環境変数を設定する |
 
 ## Reusable Workflows 一覧
 
@@ -31,7 +30,6 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
 | ワークフロー | 概要 |
 |---|---|
 | `build-linux.yml` | Linux ランナーで Unity ビルドを実行する |
-| `nintendo-switch/build-windows.yml` | Windows ランナーで Nintendo Switch ビルドを実行する |
 | `test-linux.yml` | Linux ランナーで Unity テスト（EditMode / PlayMode）を実行する |
 | `test-windows.yml` | Windows ランナーで Unity テスト（EditMode / PlayMode）を実行する |
 | `code-quality.yml` | C# フォーマットチェック（`dotnet format`）と静的解析（ReSharper）を実行する |
@@ -39,6 +37,20 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
 | `lfs-cache-daily.yml` | Git LFS キャッシュを日次で更新する |
 | `cache-cleanup.yml` | 古いキャッシュを削除する |
 | `generate-alf.yml` | Unity ALF ファイルを生成して artifact にアップロードする |
+
+## Nintendo Switch
+
+### Actions
+
+| Action | 概要 |
+|--------|------|
+| [setup-nintendo-sdk](docs/nintendo-switch/setup-nintendo-sdk.md) | `NINTENDO_SDK_ROOT` 環境変数を設定する |
+
+### Reusable Workflows
+
+| ワークフロー | 概要 |
+|---|---|
+| `nintendo-switch/build-windows.yml` | Windows ランナーで Nintendo Switch ビルドを実行する |
 
 ## 参照形式
 
