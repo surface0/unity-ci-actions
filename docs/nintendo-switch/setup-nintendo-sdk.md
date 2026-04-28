@@ -36,12 +36,12 @@ Composite Action
 ```yaml
 jobs:
   build:
-    runs-on: [self-hosted, Windows, Unity, Switch]
+    runs-on: [self-hosted, Windows, Unity]
     env:
       NX_ADDON_NAME: ${{ inputs.nx-addon-name }}
     steps:
       - name: Nintendo SDK をセットアップする
-        uses: surface0/unity-ci-actions/actions/setup-nintendo-sdk@v1
+        uses: surface0/unity-ci-actions/actions/nintendo-switch/setup-nintendo-sdk@v1
 
       - name: Unity ビルドを実行する
         uses: surface0/unity-ci-actions/actions/run-build@v1

@@ -59,4 +59,4 @@ Unity がバッチモードで起動し、指定メソッドを実行します�
 
 - `method` に指定するクラス・メソッドはプロジェクトの `Assets/Editor/` 以下に実装する必要があります。
 - Unity ライセンスの認証（[activate-unity-license](activate-unity-license.md)）を事前に行う必要があります。
-- Switch ビルドの場合は Nintendo SDK のセットアップ（[setup-nintendo-sdk](setup-nintendo-sdk.md)）も必要です。
+- Switch ビルドの場合は Nintendo SDK のセットアップ（[setup-nintendo-sdk](nintendo-switch/setup-nintendo-sdk.md)）も必要です。

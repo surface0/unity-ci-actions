@@ -22,7 +22,7 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
 | [inspectcode](docs/inspectcode.md) | ReSharper + reviewdog による C# 静的解析を実行する |
 | [run-build](docs/run-build.md) | Unity バッチモードでビルドを実行する |
 | [run-tests](docs/run-tests.md) | Unity バッチモードでテストを実行する |
-| [setup-nintendo-sdk](docs/setup-nintendo-sdk.md) | `NINTENDO_SDK_ROOT` 環境変数を設定する |
+| [setup-nintendo-sdk](docs/nintendo-switch/setup-nintendo-sdk.md) | `NINTENDO_SDK_ROOT` 環境変数を設定する |
 
 ## Reusable Workflows 一覧
 
@@ -31,7 +31,7 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
 | ワークフロー | 概要 |
 |---|---|
 | `build-linux.yml` | Linux ランナーで Unity ビルドを実行する |
-| `build-windows.yml` | Windows ランナーで Unity / Nintendo Switch ビルドを実行する |
+| `nintendo-switch/build-windows.yml` | Windows ランナーで Nintendo Switch ビルドを実行する |
 | `test-linux.yml` | Linux ランナーで Unity テスト（EditMode / PlayMode）を実行する |
 | `test-windows.yml` | Windows ランナーで Unity テスト（EditMode / PlayMode）を実行する |
 | `code-quality.yml` | C# フォーマットチェック（`dotnet format`）と静的解析（ReSharper）を実行する |

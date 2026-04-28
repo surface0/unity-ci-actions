@@ -9,7 +9,6 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
 .github/
   workflows/              # reusable workflow（他リポジトリから uses: で呼び出す）
     build-linux.yml       # Linux ビルド
-    build-windows.yml     # Windows/Switch ビルド
     test-linux.yml        # Linux テスト（EditMode / PlayMode）
     test-windows.yml      # Windows テスト（EditMode / PlayMode）
     code-quality.yml      # フォーマットチェック + 静的解析（ReSharper）
@@ -17,6 +16,8 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
     lfs-cache-daily.yml   # Git LFS キャッシュ日次更新
     cache-cleanup.yml     # 古いキャッシュの削除
     generate-alf.yml      # Unity ALF 生成
+    nintendo-switch/      # Nintendo Switch 向けワークフロー
+      build-windows.yml   # Switch ビルド（Windows ランナー）
 actions/                  # GitHub Actions の composite action
   activate-unity-license/ # ULF を使ったライセンス認証
   cache-generic/          # 任意ディレクトリのキャッシュ save/restore
@@ -27,7 +28,8 @@ actions/                  # GitHub Actions の composite action
   get-unity-version/      # ProjectVersion.txt からバージョン取得
   run-build/              # Unity バッチモードビルド実行
   run-tests/              # Unity バッチモードテスト実行
-  setup-nintendo-sdk/     # NINTENDO_SDK_ROOT 環境変数のセット
+  nintendo-switch/        # Nintendo Switch 向けアクション
+    setup-nintendo-sdk/   # NINTENDO_SDK_ROOT 環境変数のセット
 scripts/                  # action 内から呼び出す Python スクリプト
   build.py                # Unity バッチモードビルド実行
   test.py                 # Unity バッチモードテスト実行（JUnit XML 出力）

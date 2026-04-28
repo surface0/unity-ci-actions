@@ -18,7 +18,7 @@ Composite Action / Node Action の一覧です。
 | [inspectcode](inspectcode.md) | ReSharper + reviewdog による C# 静的解析を実行する |
 | [run-build](run-build.md) | Unity バッチモードでビルドを実行する |
 | [run-tests](run-tests.md) | Unity バッチモードでテストを実行する |
-| [setup-nintendo-sdk](setup-nintendo-sdk.md) | `NINTENDO_SDK_ROOT` 環境変数を設定する |
+| [setup-nintendo-sdk](nintendo-switch/setup-nintendo-sdk.md) | `NINTENDO_SDK_ROOT` 環境変数を設定する |
 
 ## 参照方法
 
