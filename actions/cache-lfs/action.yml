@@ -1,0 +1,16 @@
+name: 'Git LFS キャッシュ'
+description: 'Git LFS オブジェクト (.git/lfs) を restore し、job 成功時にポストステップで自動 save する'
+inputs:
+  cache-key:
+    description: 'キャッシュキー'
+    required: true
+  skip-save:
+    description: 'true にするとポストステップでの自動 save をスキップする'
+    required: false
+    default: 'false'
+runs:
+  using: 'node20'
+  main: 'dist/main.js'
+  post: 'dist/post.js'
+  # job が成功したときだけ自動 save を実行する
+  post-if: success()

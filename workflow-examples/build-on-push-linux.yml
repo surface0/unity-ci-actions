@@ -1,0 +1,16 @@
+name: Build on Push(Linux)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: surface0/unity-ci-actions/.github/workflows/build-linux.yml@v1
+    with:
+      container-image: registry.example.com/unity-editor:<tag>  # TODO: イメージを変更してください
+      build-method: BuildScript.BuildLinux  # TODO: ビルドメソッドを変更してください
+      build-target: StandaloneLinux64
+      # artifact-source: './Build'  # TODO: 成果物を移動する場合はコメントを外してください
+      # artifact-destination: '/path/to/dest'  # TODO: 成果物を移動する場合はコメントを外してください
+    secrets:
+      unity-license: ${{ secrets.UNITY_LICENSE_LINUX }}

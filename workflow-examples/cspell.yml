@@ -1,0 +1,8 @@
+name: CSpell
+
+on:
+  pull_request:
+
+jobs:
+  cspell:
+    uses: surface0/unity-ci-actions/.github/workflows/cspell.yml@v1

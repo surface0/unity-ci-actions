@@ -1,0 +1,13 @@
+name: Test on Push(Linux)
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    uses: surface0/unity-ci-actions/.github/workflows/test-linux.yml@v1
+    with:
+      container-image: registry.example.com/unity-editor:<tag>  # TODO: イメージを変更してください
+      platform: EditMode
+    secrets:
+      unity-license: ${{ secrets.UNITY_LICENSE_LINUX }}

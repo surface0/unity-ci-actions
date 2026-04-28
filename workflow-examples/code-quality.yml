@@ -1,0 +1,16 @@
+name: Code Quality
+
+on:
+  pull_request:
+
+jobs:
+  check:
+    uses: surface0/unity-ci-actions/.github/workflows/code-quality.yml@v1
+    with:
+      container-image: registry.example.com/unity-editor:<tag>  # TODO: イメージを変更してください
+      solution: MyProject.sln  # TODO: ソリューションファイルを変更してください
+      format-include: Assets/Scripts/  # TODO: チェック対象パスを変更してください
+      inspectcode-include: Assets/Scripts/**/*  # TODO: チェック対象パスを変更してください
+    secrets:
+      unity-license: ${{ secrets.UNITY_LICENSE_LINUX }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}

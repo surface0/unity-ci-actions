@@ -1,0 +1,49 @@
+name: 'C# 静的解析 (ReSharper + reviewdog)'
+description: 'inspectcode で静的解析を実行し、reviewdog で結果を報告する'
+inputs:
+  solution:
+    description: 'ソリューションファイルのパス'
+    required: true
+  include:
+    description: 'チェック対象のパス（--include に渡す値）'
+    required: false
+    default: ''
+  github-token:
+    description: 'GitHub Token（reviewdog の認証に使用）'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Install ReSharper CLI
+      run: |
+        # ワークスペースに複数 .csproj があると dotnet が誤検出するため /tmp で実行
+        cd /tmp && dotnet tool install --tool-path /tmp/jetbrains-tools JetBrains.ReSharper.GlobalTools
+        echo "/tmp/jetbrains-tools" >> $GITHUB_PATH
+      shell: bash
+
+    - name: Run inspectcode
+      run: |
+        ARGS="${{ inputs.solution }} --output=inspectcode-report.sarif --format=Sarif"
+        if [ -n "${{ inputs.include }}" ]; then
+          ARGS="$ARGS --include=${{ inputs.include }}"
+        fi
+        jb inspectcode $ARGS
+      shell: bash
+
+    - name: Setup reviewdog
+      if: always()
+      uses: reviewdog/action-setup@v1
+      with:
+        reviewdog_version: latest
+
+    - name: Report with reviewdog
+      if: always()
+      env:
+        REVIEWDOG_GITHUB_API_TOKEN: ${{ inputs.github-token }}
+      run: |
+        cat inspectcode-report.sarif | reviewdog \
+          -f=sarif \
+          -name="ReSharper Inspections" \
+          -reporter=github-check \
+          -fail-on-error=true
+      shell: bash

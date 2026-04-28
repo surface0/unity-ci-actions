@@ -1,0 +1,12 @@
+name: 'キャッシュパージ'
+description: '古いキャッシュファイルを削除する'
+inputs:
+  days:
+    description: 'この日数より古いキャッシュファイルを削除する'
+    required: false
+    default: '14'
+runs:
+  using: "composite"
+  steps:
+    - run: python "$GITHUB_ACTION_PATH/../../scripts/cache.py" --cache-dir "$PERSISTENT_CACHE_DIR" purge --days ${{ inputs.days }}
+      shell: bash

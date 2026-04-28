@@ -1,0 +1,15 @@
+name: スペルチェック
+
+on:
+  workflow_call:
+
+jobs:
+  cspell:
+    name: スペルチェック
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウトする
+        uses: actions/checkout@v6
+
+      - name: CSpell を実行する
+        uses: surface0/unity-ci-actions/actions/cspell@v1

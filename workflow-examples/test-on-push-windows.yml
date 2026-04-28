@@ -1,0 +1,12 @@
+name: Test on Push(Windows)
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    uses: surface0/unity-ci-actions/.github/workflows/test-windows.yml@v1
+    with:
+      platform: EditMode
+    secrets:
+      unity-license: ${{ secrets.UNITY_LICENSE_WINDOWS }}

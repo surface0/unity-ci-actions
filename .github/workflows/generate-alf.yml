@@ -1,0 +1,47 @@
+name: Unity ALF 生成
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: 'ALF を生成するプラットフォーム（Windows または Linux）'
+        required: true
+        type: string
+      container-image:
+        description: 'Linux ビルドに使用する Docker イメージ（platform が Linux の場合に必須）'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  generate-alf-windows:
+    if: inputs.platform == 'Windows'
+    runs-on: [self-hosted, Windows, Unity]
+    steps:
+      - name: Python をセットアップする
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: リポジトリをチェックアウトする
+        uses: actions/checkout@v6
+
+      - name: ALF を生成してアップロードする
+        uses: surface0/unity-ci-actions/actions/generate-alf@v1
+
+  generate-alf-linux:
+    if: inputs.platform == 'Linux'
+    runs-on: [self-hosted, ubuntu]
+    container:
+      image: ${{ inputs.container-image }}
+    steps:
+      - name: Python をセットアップする
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: リポジトリをチェックアウトする
+        uses: actions/checkout@v6
+
+      - name: ALF を生成してアップロードする
+        uses: surface0/unity-ci-actions/actions/generate-alf@v1

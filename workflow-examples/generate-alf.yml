@@ -1,0 +1,19 @@
+name: Generate Unity ALF
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'プラットフォーム'
+        required: true
+        type: choice
+        options:
+          - Windows
+          - Linux
+
+jobs:
+  generate:
+    uses: surface0/unity-ci-actions/.github/workflows/generate-alf.yml@v1
+    with:
+      platform: ${{ inputs.platform }}
+      container-image: registry.example.com/unity-editor:<tag>  # TODO: イメージを変更してください（Linux の場合に使用）

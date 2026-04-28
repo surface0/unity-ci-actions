@@ -1,0 +1,16 @@
+name: Build on Push(Windows)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: surface0/unity-ci-actions/.github/workflows/nintendo-switch/build-windows.yml@v1
+    with:
+      nx-addon-name: 'Unity6000.3.4_LTS-NXAddon20.5.14-Unity6.3'  # TODO: NX アドオン名を変更してください
+      build-method: BuildScript.Build  # TODO: ビルドメソッドを変更してください
+      build-target: Switch
+      artifact-source: './Build'  # TODO: 成果物のソースパスを変更してください（不要な場合は削除）
+      artifact-destination: 'D:/Build'  # TODO: 成果物の移動先を変更してください（不要な場合は削除）
+    secrets:
+      unity-license: ${{ secrets.UNITY_LICENSE_WINDOWS }}

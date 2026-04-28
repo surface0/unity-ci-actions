@@ -1,0 +1,27 @@
+name: キャッシュクリーンアップ
+
+on:
+  workflow_call:
+    inputs:
+      days:
+        description: '削除対象とするキャッシュの経過日数'
+        required: false
+        type: number
+        default: 14
+
+jobs:
+  cleanup:
+    strategy:
+      matrix:
+        runner: [linux-01, windows-01]
+    runs-on: [self-hosted, "${{ matrix.runner }}"]
+    steps:
+      - name: Python をセットアップする
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: 古いキャッシュファイルを削除する
+        uses: surface0/unity-ci-actions/actions/cache-purge@v1
+        with:
+          days: ${{ inputs.days }}

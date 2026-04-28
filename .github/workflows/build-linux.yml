@@ -1,0 +1,120 @@
+name: Unity Linux ビルド
+
+on:
+  workflow_call:
+    inputs:
+      container-image:
+        description: 'ビルドに使用する Docker イメージ'
+        required: true
+        type: string
+      build-method:
+        description: '呼び出す Unity C# 静的メソッド'
+        required: true
+        type: string
+      build-target:
+        description: 'ビルドターゲット'
+        required: true
+        type: string
+      artifact-source:
+        description: 'ビルド成果物のソースディレクトリ'
+        required: false
+        type: string
+        default: './Build'
+      artifact-destination:
+        description: 'ビルド成果物の移動先ディレクトリ（空の場合は移動しない）'
+        required: false
+        type: string
+        default: ''
+      nuget-dir:
+        description: 'NuGet パッケージのインストール先ディレクトリ'
+        required: false
+        type: string
+        default: 'Packages/nuget-packages/InstalledPackages'
+      nuget-config:
+        description: 'NuGet packages.config のパス（キャッシュキーのハッシュに使用）'
+        required: false
+        type: string
+        default: 'Packages/nuget-packages/packages.config'
+      use-lfs:
+        description: 'Git LFS を使用するか（LFS を使用しないプロジェクトでは false のまま）'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      unity-license:
+        description: 'Unity ライセンスファイル（ULF）の内容'
+        required: true
+
+jobs:
+  build:
+    runs-on: [self-hosted, ubuntu]
+    container:
+      image: ${{ inputs.container-image }}
+      # ジョブコンテナで実行する場合は持続的キャッシュの保存先は明示的にマウントする必要がある
+      volumes:
+        - "/var/actions-runner-persistent-caches:/var/actions-runner-persistent-caches"
+
+    steps:
+    - name: Python をセットアップする
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
+
+    - name: リポジトリをチェックアウトする
+      uses: actions/checkout@v6
+      # lfs: true は指定しない。use-lfs が true の場合はキャッシュ復元後に差分取得する
+
+    - name: Git LFS をインストールする
+      if: inputs.use-lfs
+      run: git lfs install
+      shell: bash
+
+    # LFS キャッシュのセーブは lfs-cache-daily.yml のみで行う
+    - name: Git LFS キャッシュを復元する
+      if: inputs.use-lfs
+      uses: surface0/unity-ci-actions/actions/cache-lfs@v1
+      with:
+        cache-key: ${{ github.event.repository.name }}-lfs
+        skip-save: 'true'
+
+    # キャッシュ復元後に差分だけ取得することで全件ダウンロードを回避する
+    - name: Git LFS オブジェクトを差分取得する
+      if: inputs.use-lfs
+      run: git lfs pull
+      shell: bash
+
+    - name: Unity バージョンを取得する
+      id: get_unity_version
+      uses: surface0/unity-ci-actions/actions/get-unity-version@v1
+
+    # job 成功時にポストステップで自動セーブされる
+    - name: NuGet パッケージキャッシュを復元する
+      uses: surface0/unity-ci-actions/actions/cache-generic@v1
+      with:
+        target-dir: ${{ inputs.nuget-dir }}
+        cache-key: ${{ github.event.repository.name }}-nuget-${{ hashFiles(inputs.nuget-config) }}
+        restore-keys: ${{ github.event.repository.name }}-nuget-
+
+    # job 成功時にポストステップで自動セーブされる
+    - name: Unity Library キャッシュを復元する
+      uses: surface0/unity-ci-actions/actions/cache-library@v1
+      with:
+        unity-version: ${{ steps.get_unity_version.outputs.unity-version }}
+
+    - name: Unity ライセンスを認証する
+      uses: surface0/unity-ci-actions/actions/activate-unity-license@v1
+      with:
+        license-content: ${{ secrets.unity-license }}
+
+    - name: Unity ビルドを実行する
+      uses: surface0/unity-ci-actions/actions/run-build@v1
+      with:
+        method: ${{ inputs.build-method }}
+        target: ${{ inputs.build-target }}
+
+    - name: ビルド成果物を移動する
+      if: inputs.artifact-destination != ''
+      run: |
+        mkdir -p "${{ inputs.artifact-destination }}"
+        mv ${{ inputs.artifact-source }}/* "${{ inputs.artifact-destination }}/"
+      shell: bash

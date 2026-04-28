@@ -1,0 +1,20 @@
+name: 'Unity バージョン取得'
+description: 'ProjectVersion.txt から Unity バージョンを読み取り、ステップ出力に設定する'
+outputs:
+  unity-version:
+    description: "Unity バージョン文字列（例: 6000.3.4f1）"
+    value: ${{ steps.get_version.outputs.version }}
+runs:
+  using: "composite"
+  steps:
+    - id: get_version
+      run: |
+        # cygpath は Windows (Git Bash) 環境でのみ存在する。パス変換が必要なときに使用
+        if command -v cygpath > /dev/null 2>&1; then
+          script_path=$(cygpath -u "$GITHUB_ACTION_PATH/../../scripts/get_unity_version.py")
+        else
+          script_path="$GITHUB_ACTION_PATH/../../scripts/get_unity_version.py"
+        fi
+        version=$(python "$script_path")
+        echo "version=$version" >> $GITHUB_OUTPUT
+      shell: bash
