@@ -2,10 +2,16 @@ name: Git LFS キャッシュ日次更新
 
 on:
   workflow_call:
+    inputs:
+      runs-on:
+        description: 'ジョブを実行するランナーラベル（JSON文字列または配列）'
+        required: false
+        type: string
+        default: '["self-hosted", "ubuntu"]'
 
 jobs:
   cache:
-    runs-on: [self-hosted, ubuntu]
+    runs-on: ${{ fromJson(inputs.runs-on) }}
     steps:
     - name: リポジトリをチェックアウトする
       uses: actions/checkout@v6

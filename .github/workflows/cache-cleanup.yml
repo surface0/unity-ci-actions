@@ -8,12 +8,17 @@ on:
         required: false
         type: number
         default: 14
+      runners:
+        description: 'クリーンアップ対象のランナー名リスト（JSON配列文字列）'
+        required: false
+        type: string
+        default: '["linux-01", "windows-01"]'
 
 jobs:
   cleanup:
     strategy:
       matrix:
-        runner: [linux-01, windows-01]
+        runner: ${{ fromJson(inputs.runners) }}
     runs-on: [self-hosted, "${{ matrix.runner }}"]
     steps:
       - name: Python をセットアップする

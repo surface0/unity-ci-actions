@@ -12,11 +12,21 @@ on:
         required: false
         type: string
         default: ''
+      runs-on-windows:
+        description: 'Windows ジョブを実行するランナーラベル（JSON文字列または配列）'
+        required: false
+        type: string
+        default: '["self-hosted", "Windows", "Unity"]'
+      runs-on-linux:
+        description: 'Linux ジョブを実行するランナーラベル（JSON文字列または配列）'
+        required: false
+        type: string
+        default: '["self-hosted", "ubuntu"]'
 
 jobs:
   generate-alf-windows:
     if: inputs.platform == 'Windows'
-    runs-on: [self-hosted, Windows, Unity]
+    runs-on: ${{ fromJson(inputs.runs-on-windows) }}
     steps:
       - name: Python をセットアップする
         uses: actions/setup-python@v5
@@ -31,7 +41,7 @@ jobs:
 
   generate-alf-linux:
     if: inputs.platform == 'Linux'
-    runs-on: [self-hosted, ubuntu]
+    runs-on: ${{ fromJson(inputs.runs-on-linux) }}
     container:
       image: ${{ inputs.container-image }}
     steps:

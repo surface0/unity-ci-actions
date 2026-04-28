@@ -41,6 +41,11 @@ on:
         required: false
         type: boolean
         default: false
+      runs-on:
+        description: 'ジョブを実行するランナーラベル（JSON文字列または配列）'
+        required: false
+        type: string
+        default: '["self-hosted", "Windows", "Unity", "Switch"]'
     secrets:
       unity-license:
         description: 'Unity ライセンスファイル（ULF）の内容'
@@ -48,7 +53,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, Windows, Unity, Switch]
+    runs-on: ${{ fromJson(inputs.runs-on) }}
     env:
       NX_ADDON_NAME: ${{ inputs.nx-addon-name }}
 
