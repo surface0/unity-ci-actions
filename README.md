@@ -1,12 +1,12 @@
 # Unity CI Actions
 
-セルフホストランナーで Unity CI を実行するための、共有 composite actions と reusable workflows のリポジトリ。
+セルフホストランナーで Unity CI を実行するための、共有 composite actions と reusable workflows のリポジトリです。
 
-GitHub Actions のリポジトリ参照で使用する（サブモジュールではない）。
+GitHub Actions のリポジトリ参照で使用します（サブモジュールではありません）。
 
 ## Actions 一覧
 
-詳細は [docs/](docs/) を参照。
+詳細は [docs/](docs/) を参照してください。
 
 | Action | 概要 |
 |--------|------|
@@ -25,7 +25,7 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
 
 ## Reusable Workflows 一覧
 
-ワークフロー例は [workflow-examples/](workflow-examples/) を参照。
+ワークフロー例は [workflow-examples/](workflow-examples/) を参照してください。
 
 | ワークフロー | 概要 |
 |---|---|
@@ -54,7 +54,7 @@ GitHub Actions のリポジトリ参照で使用する（サブモジュール�
 
 ## プロジェクトひな型
 
-Unity プロジェクト側に配置する設定ファイルのひな型を [project-templates/](project-templates/) に収録している。
+Unity プロジェクト側に配置する設定ファイルのひな型を [project-templates/](project-templates/) に収録しています。
 
 | ファイル | 配置先 | 概要 |
 |---|---|---|
@@ -62,7 +62,7 @@ Unity プロジェクト側に配置する設定ファイルのひな型を [pro
 | [.cspell/project-words.txt](project-templates/.cspell/project-words.txt) | プロジェクトルート | プロジェクト固有単語リスト（Unity API 名など収録済み） |
 | [.editorconfig](project-templates/.editorconfig) | プロジェクトルート（`.sln` と同階層） | C# コーディング規約（Unity C# Style Guide 準拠） |
 
-`cspell.json` と `.cspell/project-words.txt` は `cspell` / `code-quality` ワークフローと組み合わせて使用する。`.editorconfig` は `code-quality` ワークフローの `dotnet format` および ReSharper が参照する。
+`cspell.json` と `.cspell/project-words.txt` は `cspell` / `code-quality` ワークフローと組み合わせて使用します。`.editorconfig` は `code-quality` ワークフローの `dotnet format` および ReSharper が参照します。
 
 ## 参照形式
 
@@ -86,9 +86,9 @@ jobs:
 
 **Python のセットアップ**
 
-多くの action が内部で Python スクリプトを使用する。Python はランナーへの事前インストール不要で、このリポジトリの reusable workflow はすべて最初のステップで `actions/setup-python` を実行する。
+多くの action が内部で Python スクリプトを使用します。Python はランナーへの事前インストールは不要で、このリポジトリの reusable workflow はすべて最初のステップで `actions/setup-python` を実行します。
 
-composite action を直接呼び出す場合は、呼び出し側ワークフローで Python をセットアップすること。
+composite action を直接呼び出す場合は、呼び出し側ワークフローで Python をセットアップしてください。
 
 ```yaml
 - name: Python をセットアップする
@@ -99,7 +99,7 @@ composite action を直接呼び出す場合は、呼び出し側ワークフロ
 
 **環境変数**
 
-以下の環境変数をランナー側で設定すること。
+以下の環境変数をランナー側で設定してください。
 
 | 変数名 | 必須 | 内容 |
 |---|---|---|
@@ -108,44 +108,44 @@ composite action を直接呼び出す場合は、呼び出し側ワークフロ
 
 ### Linux ランナー
 
-Linux ワークフローはジョブコンテナ内で実行されるため、以下は**コンテナイメージ側**の要件となる。
+Linux ワークフローはジョブコンテナ内で実行されるため、以下は**コンテナイメージ側**の要件となります。
 
 | ツール | 用途 |
 |---|---|
 | Git + Git LFS | ソース取得・LFS オブジェクト取得 |
 | Unity Hub + Unity Editor | ビルド・テスト・ライセンス認証 |
 
-ランナー側では、永続キャッシュディレクトリ（`/var/actions-runner-persistent-caches`）をコンテナにマウントするよう設定すること。
+ランナー側では、永続キャッシュディレクトリ（`/var/actions-runner-persistent-caches`）をコンテナにマウントするよう設定してください。
 
 ### Windows ランナー
 
-Windows ワークフローはランナー上で直接実行される。
+Windows ワークフローはランナー上で直接実行されます。
 
 | ツール | 用途 |
 |---|---|
 | Git + Git Bash | bash シェルが必要なステップで使用 |
 | Unity Hub + Unity Editor | ビルド・テスト・ライセンス認証 |
 
-また、以下の設定が必要となる。
+また、以下の設定が必要です。
 
-- ランナーサービスのアカウントをローカルシステムアカウント（`NT AUTHORITY\SYSTEM`）に設定する
-- パス長 260 文字制限を解除する:
+- ランナーサービスのアカウントをローカルシステムアカウント（`NT AUTHORITY\SYSTEM`）に設定します
+- パス長 260 文字制限を解除します:
   ```
   New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
   ```
-- セキュリティソフトのリアルタイムスキャンから Unity のビルドキャッシュディレクトリを除外する
+- セキュリティソフトのリアルタイムスキャンから Unity のビルドキャッシュディレクトリを除外します
 
 ### Unity ライセンスの準備
 
-1. `generate-alf` action または `generate-alf.yml` workflow で ALF ファイルを生成する
-2. [Unity Manual Activation](https://license.unity3d.com/manual) でシリアルキーを入力して ULF を取得する
-3. ULF ファイルを GitHub Secret（`UNITY_LICENSE_LINUX` / `UNITY_LICENSE_WINDOWS`）に格納する
+1. `generate-alf` action または `generate-alf.yml` workflow で ALF ファイルを生成します
+2. [Unity Manual Activation](https://license.unity3d.com/manual) でシリアルキーを入力して ULF を取得します
+3. ULF ファイルを GitHub Secret（`UNITY_LICENSE_LINUX` / `UNITY_LICENSE_WINDOWS`）に格納します
 
 ## 開発者向け
 
 ### node action のビルド
 
-`cache-generic` / `cache-lfs` / `cache-library` は rollup でバンドルしている。ソース変更後は必ずリビルドしてコミットすること。
+`cache-generic` / `cache-lfs` / `cache-library` は rollup でバンドルしています。ソース変更後は必ずリビルドしてコミットしてください。
 
 ```bash
 npm install
@@ -154,4 +154,4 @@ npm run build
 
 ### ドキュメントの更新
 
-action や workflow を追加・変更した場合は `docs/` 以下の対応するファイルを同時に更新すること。
+action や workflow を追加・変更した場合は `docs/` 以下の対応するファイルを同時に更新してください。
