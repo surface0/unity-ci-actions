@@ -1,0 +1,8 @@
+name: Meta Check
+
+on:
+  pull_request:
+
+jobs:
+  meta-check:
+    uses: surface0/unity-ci-actions/.github/workflows/meta-check.yml@v1
