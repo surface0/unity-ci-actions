@@ -1,0 +1,38 @@
+name: Metaファイル 過不足チェック
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: 'ジョブを実行するランナーラベル（JSON文字列または配列）'
+        required: false
+        type: string
+        default: '"ubuntu-latest"'
+
+jobs:
+  meta-check:
+    runs-on: ${{ fromJson(inputs.runs-on) }}
+    steps:
+      - name: リポジトリをチェックアウトする
+        uses: actions/checkout@v6
+        with:
+          submodules: false
+          lfs: false
+          fetch-depth: 1
+
+      - name: Metaファイル チェック
+        uses: DeNA/unity-meta-check@v4
+        with:
+          enable_junit: true
+          junit_xml_path: junit.xml
+          # PR時にコメントに出力する
+          enable_pr_comment: ${{ github.event_name == 'pull_request' }}
+          pr_comment_lang: ja
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: mikepenz/action-junit-report@v6
+        with:
+          report_paths: junit.xml
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        if: always()
