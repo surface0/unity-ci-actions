@@ -37,6 +37,7 @@ GitHub Actions のリポジトリ参照で使用します（サブモジュー�
 | `lfs-cache-daily.yml` | Git LFS キャッシュを日次で更新する |
 | `cache-cleanup.yml` | 古いキャッシュを削除する |
 | `generate-alf.yml` | Unity ALF ファイルを生成して artifact にアップロードする |
+| `meta-check.yml` | Unity の `.meta` ファイルの過不足をチェックする |
 
 ## Nintendo Switch
 
